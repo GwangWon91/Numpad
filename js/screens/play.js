@@ -42,7 +42,7 @@ export function playScreen(ctx, modeId) {
   const comboEl = h('div.combo', { 'aria-live': 'off' });
   const burst = h('div.burst', { 'aria-hidden': 'true' });
   const hint = h('p.play__hint', '첫 키를 누르면 시작합니다 · 타이머는 첫 키부터');
-  const banner = h('div.play__banner');
+  const banner = h('div.play__banner', { role: 'status', 'aria-live': 'polite' });
   const keypad = st.showKeypad ? createKeypad() : null;
   if (keypad && modeId === 'keys') keypad.setPool(LEVELS.find((l) => l.id === st.level)?.tokens);
 
@@ -197,8 +197,7 @@ export function playScreen(ctx, modeId) {
         // 판정 결과를 잠깐 보여 준 뒤 다음 문제
         answerEl.classList.add(ok ? 'is-good' : 'is-bad');
         if (!ok) answerEl.after(h('span.answer__correct.mono', `정답 ${ev.answer}`));
-        const prev = prompt.firstChild;
-        prev.classList.add('is-leaving');
+        if (ok) prompt.firstChild.classList.add('is-leaving');
         if (ev.end) finish();
         else {
           lock = true;
