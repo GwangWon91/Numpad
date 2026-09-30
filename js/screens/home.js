@@ -141,6 +141,7 @@ export function homeScreen(ctx) {
 
   const el = h(
     'div.screen.home',
+    h('div.banner.touch-note', '⌨ 넘패드가 있는 키보드에서 연습하도록 만들어졌어요'),
     hero,
     h('section.modes', cards),
     options,
