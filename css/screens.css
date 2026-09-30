@@ -298,7 +298,9 @@
   border-radius: 28px;
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: 0 8px 0 var(--key-side), var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: 0 8px 0 var(--key-target-side), 0 0 0 6px color-mix(in srgb, var(--accent) 14%, transparent), var(--shadow-lg);
+  color: var(--accent);
   font-size: 56px;
   font-weight: 700;
 }
@@ -547,8 +549,48 @@
 
 /* ══ 결과 ═══════════════════════════════ */
 .result__head {
+  position: relative;
   margin-bottom: var(--space-6);
   text-align: center;
+}
+
+.grade {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--space-2);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 800;
+  rotate: -6deg;
+  animation: grade-in 0.5s var(--ease-spring) 0.2s backwards;
+}
+
+.grade--S {
+  background: linear-gradient(135deg, #ffb224, var(--fire));
+  color: #fff;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--fire) 45%, transparent);
+}
+
+.grade--A {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.grade--B {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+@keyframes grade-in {
+  from {
+    opacity: 0;
+    transform: scale(2.2);
+  }
 }
 
 .result__emoji {
@@ -810,5 +852,49 @@
 @media (hover: none) and (pointer: coarse) {
   .touch-note {
     display: flex;
+  }
+}
+
+/* 노트북처럼 세로가 짧은 화면: 연습 화면이 한눈에 들어오게 */
+@media (max-height: 860px) {
+  .app {
+    padding-top: var(--space-4);
+  }
+
+  .topbar {
+    margin-bottom: var(--space-4);
+  }
+
+  .stage {
+    min-height: 150px;
+  }
+
+  .prompt__key {
+    width: 92px;
+    height: 92px;
+    border-radius: 22px;
+    font-size: 44px;
+  }
+
+  .prompt__finger {
+    margin-top: var(--space-2);
+  }
+
+  .combo-wrap {
+    margin-top: var(--space-2);
+  }
+
+  .play__banner {
+    min-height: 36px;
+    margin: 0;
+  }
+
+  .keypad:not(.keypad--sm) {
+    --cap: 50px;
+    --gap: 7px;
+  }
+
+  .play__hint {
+    margin-top: var(--space-3);
   }
 }
