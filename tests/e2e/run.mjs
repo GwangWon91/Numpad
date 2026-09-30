@@ -46,6 +46,7 @@ async function home() {
 
 try {
   await step('홈: 오류 없이 열리고 모드 카드 4개가 보인다', async () => {
+    await b.setColorScheme('light');
     await b.goto(base);
     await b.eval('localStorage.clear()');
     await home();
@@ -90,6 +91,7 @@ try {
     const tiles = await b.eval('[...document.querySelectorAll(".stat__label")].map(e => e.textContent).join("|")');
     assert.match(tiles, /타\/분/);
     assert.match(await b.eval('document.querySelector(".result__title").textContent'), /첫 기록/);
+    assert.equal(await b.eval('document.querySelector(".grade").textContent'), 'A', '96.8% → A');
     const acc = await b.eval('document.querySelectorAll(".stat__value")[1].textContent');
     assert.equal(acc, '96.8%', '30타 중 오타 1 → 30/31');
     assert.equal(await b.eval('document.querySelectorAll(".weak-list li").length'), 1);

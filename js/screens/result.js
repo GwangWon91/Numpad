@@ -21,6 +21,14 @@ function headline(record, pbs) {
   return { emoji: '🐢', title: '천천히, 정확하게', sub: '키를 보지 말고 5번 돌기를 기준으로 찾아요.' };
 }
 
+// 정확도 등급: 속도보다 정확도를 먼저 챙기도록
+export function gradeOf(accuracy) {
+  if (accuracy >= 0.99) return 'S';
+  if (accuracy >= 0.96) return 'A';
+  if (accuracy >= 0.9) return 'B';
+  return 'C';
+}
+
 export function resultScreen(ctx) {
   const { record, pbs } = ctx.lastResult;
   const mode = MODES[record.mode];
@@ -74,6 +82,7 @@ export function resultScreen(ctx) {
     h(
       'section.result__head',
       h('div.result__emoji', head.emoji),
+      h(`div.grade.grade--${gradeOf(record.accuracy)}`, { title: '정확도 등급 (S 99% · A 96% · B 90%)' }, gradeOf(record.accuracy)),
       h('h1.result__title', head.title),
       h('p.result__sub', `${mode.name} · ${head.sub}`),
     ),
