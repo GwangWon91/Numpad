@@ -233,6 +233,33 @@
   font-size: 17px;
 }
 
+.hud__stat small,
+.hud__score small {
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.hud__score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+
+.hud__score strong {
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.hud__score strong.is-bump {
+  animation: combo-pop 0.25s var(--ease-spring);
+  display: inline-block;
+}
+
 .hud__stat.is-urgent strong {
   color: var(--bad);
   animation: pulse 0.6s ease-in-out infinite alternate;
@@ -526,6 +553,44 @@
   }
 }
 
+/* 정타 점수 팝업: 콤보 줄 왼쪽 */
+.gain {
+  position: absolute;
+  right: calc(50% + 72px);
+  top: 50%;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  translate: 0 -50%;
+}
+
+.gain.is-fast {
+  color: var(--fire);
+}
+
+.gain.is-on {
+  animation: gain 0.6s var(--ease-out);
+}
+
+@keyframes gain {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-14px) scale(1);
+  }
+}
+
 .progress.is-flash {
   animation: progress-flash 0.6s var(--ease-out);
 }
@@ -626,6 +691,45 @@
 .result__sub {
   margin-top: var(--space-2);
   color: var(--text-2);
+}
+
+.result__score {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: calc(var(--space-2) * -1) 0 var(--space-5);
+  animation: prompt-in 0.4s var(--ease-out);
+}
+
+.result__score-n {
+  color: var(--accent);
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.result__score-label {
+  color: var(--text-2);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.result__score.is-best .result__score-n {
+  background: linear-gradient(90deg, var(--accent), var(--fire));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.result__score.is-best .result__score-label {
+  color: var(--fire);
+}
+
+.sessions__score {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .result__tiles {
@@ -856,8 +960,10 @@
     width: 100%;
   }
 
-  .sessions th:nth-child(6),
-  .sessions td:nth-child(6) {
+  .sessions th:nth-child(4),
+  .sessions td:nth-child(4),
+  .sessions th:nth-child(7),
+  .sessions td:nth-child(7) {
     display: none;
   }
 }

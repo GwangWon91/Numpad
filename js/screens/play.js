@@ -21,6 +21,9 @@ export function playScreen(ctx, modeId) {
   // ── HUD ──
   const timerEl = h('strong.mono', length.type === 'time' ? formatDuration(length.value) : '0:00');
   const accEl = h('strong.mono', '—');
+  const scoreEl = h('strong.mono', '0');
+  const speedEl = h('strong.mono', '—');
+  const speedUnit = mode.strict ? '타/분' : '초/문제';
   const progEl = h('strong.mono', length.type === 'count' ? `0/${length.value}` : '');
   const bar = h('div.progress__fill');
   const detail = modeId === 'keys' ? `L${st.level} ${LEVELS.find((l) => l.id === st.level)?.name ?? ''}` : DIFF_NAME[st.difficulty];
@@ -30,7 +33,9 @@ export function playScreen(ctx, modeId) {
     h('div.hud__title', h('strong', mode.name), h('span.chip', detail), length.type === 'time' ? h('span.chip', '⏱ 타임어택') : null),
     h(
       'div.hud__stats',
+      h('span.hud__score', { title: '점수 = 정타마다 기본점 × 속도 × 콤보 배율' }, scoreEl, h('small', '점')),
       h('span.hud__stat', '⏱ ', timerEl),
+      h('span.hud__stat', { title: mode.strict ? '맞힌 키 / 분' : '문제당 평균 시간' }, '⚡ ', speedEl, h('small', ` ${speedUnit}`)),
       h('span.hud__stat', '✓ ', accEl),
       length.type === 'count' ? h('span.hud__stat', progEl) : null,
     ),
@@ -41,6 +46,7 @@ export function playScreen(ctx, modeId) {
   const prompt = h('div.prompt');
   const comboEl = h('div.combo', { 'aria-live': 'off' });
   const burst = h('div.burst', { 'aria-hidden': 'true' });
+  const gain = h('div.gain', { 'aria-hidden': 'true' });
   const hint = h('p.play__hint', '첫 키를 누르면 시작합니다 · 타이머는 첫 키부터');
   const banner = h('div.play__banner', { role: 'status', 'aria-live': 'polite' });
   const keypad = st.showKeypad ? createKeypad() : null;
@@ -50,7 +56,7 @@ export function playScreen(ctx, modeId) {
     `div.screen.play.play--${modeId}`,
     hud,
     progress,
-    h('div.stage', prompt, h('div.combo-wrap', comboEl, burst)),
+    h('div.stage', prompt, h('div.combo-wrap', gain, comboEl, burst)),
     banner,
     keypad ? h('div.play__keypad', keypad.el) : null,
     hint,
@@ -106,6 +112,10 @@ export function playScreen(ctx, modeId) {
     timerEl.textContent = formatDuration(length.type === 'time' ? session.remaining(t) : session.elapsed(t));
     const judged = mode.strict ? s.hits + s.misses : s.submitted;
     accEl.textContent = judged ? formatPercent(mode.strict ? s.hits / judged : s.solved / judged) : '—';
+    scoreEl.textContent = s.score.toLocaleString('ko-KR');
+    const minutes = session.elapsed(t) / 60_000;
+    if (mode.strict) speedEl.textContent = s.hits && minutes > 0.02 ? String(Math.round(s.hits / minutes)) : '—';
+    else speedEl.textContent = s.submitted ? (session.elapsed(t) / s.submitted / 1000).toFixed(1) : '—';
     if (length.type === 'count') {
       progEl.textContent = `${s.itemsDone}/${length.value}`;
       bar.style.transform = `scaleX(${s.itemsDone / length.value})`;
@@ -130,6 +140,15 @@ export function playScreen(ctx, modeId) {
       replay(burst, 'is-on');
       replay(progress, 'is-flash');
     }
+  }
+
+  // 정타 점수 팝업: 콤보 왼쪽에 +점수, 목표보다 훨씬 빠르면 ⚡
+  function showGain(ev) {
+    if (!ev.points) return;
+    gain.textContent = `+${ev.points}${ev.speed >= 1.5 ? ' ⚡' : ''}`;
+    gain.classList.toggle('is-fast', ev.speed >= 1.5);
+    replay(gain, 'is-on');
+    replay(scoreEl, 'is-bump');
   }
 
   let bannerTimer;
@@ -170,6 +189,7 @@ export function playScreen(ctx, modeId) {
         markCursor();
         updateTarget();
         updateCombo(ev.combo);
+        showGain(ev);
         break;
       case 'miss':
         keypad?.press(token, 'bad');
@@ -184,6 +204,7 @@ export function playScreen(ctx, modeId) {
         if (modeId === 'keys') sfx.hit(ev.combo - 1, ev.combo);
         else sfx.item();
         updateCombo(ev.combo);
+        showGain(ev);
         if (ev.end) finish();
         else renderItem();
         break;
@@ -199,6 +220,7 @@ export function playScreen(ctx, modeId) {
         keypad?.press('Enter', ok ? 'good' : 'bad');
         ok ? sfx.item() : sfx.miss();
         updateCombo(ev.combo);
+        showGain(ev);
         // 판정 결과를 잠깐 보여 준 뒤 다음 문제
         answerEl.classList.add(ok ? 'is-good' : 'is-bad');
         if (!ok) answerEl.after(h('span.answer__correct.mono', `정답 ${ev.answer}`));
