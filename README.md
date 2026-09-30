@@ -34,8 +34,8 @@ python -m http.server 8080
 ## 테스트
 
 ```bash
-node --test tests/unit/        # 순수 로직 단위 테스트
-node tests/e2e/run.mjs         # 헤드리스 Chrome으로 실제 키 입력 E2E 테스트
+npm test                       # 순수 로직 단위 테스트 (node --test)
+npm run test:e2e               # 헤드리스 Chrome으로 실제 키 입력 E2E 테스트
 ```
 
 ## 구조

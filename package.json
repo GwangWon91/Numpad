@@ -1,0 +1,12 @@
+{
+  "name": "numpad-dojo",
+  "private": true,
+  "type": "module",
+  "description": "넘패드에 익숙해지고 계산을 빠르게 입력하는 연습장",
+  "scripts": {
+    "start": "node tests/e2e/server.mjs 8080",
+    "test": "node --test \"tests/unit/*.test.mjs\"",
+    "test:e2e": "node tests/e2e/run.mjs"
+  },
+  "license": "MIT"
+}
