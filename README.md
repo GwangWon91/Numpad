@@ -97,6 +97,7 @@ tests/      단위 테스트, E2E 테스트
 - [요구사항 명세](docs/requirements.md)
 - [설계 문서](docs/design.md)
 - [테스트 체크리스트](docs/test-checklist.md)
+- [사용자 테스트 피드백과 반영 내역](docs/feedback.md)
 
 ## 라이선스
 
