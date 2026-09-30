@@ -1,0 +1,452 @@
+/* 공통 컴포넌트: 헤더, 버튼, 칩, 카드, 키캡, 배너, 그래프 */
+
+/* ── 헤더 ─────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand__mark {
+  display: grid;
+  grid-template-columns: repeat(3, 6px);
+  gap: 2px;
+  padding: 5px;
+  border-radius: 7px;
+  background: var(--accent);
+}
+
+.brand__mark i {
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  background: var(--accent-ink);
+  opacity: 0.55;
+}
+
+.brand__mark i:nth-child(5) {
+  opacity: 1;
+}
+
+.topbar__actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* ── 버튼 ─────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.12s var(--ease-out), background 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+  border-color: var(--text-3);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.btn--primary:hover {
+  border-color: transparent;
+  filter: brightness(1.06);
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.btn--ghost:hover {
+  border-color: transparent;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn--icon {
+  width: 40px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.btn--danger {
+  color: var(--bad);
+}
+
+.btn--lg {
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  font-size: 16px;
+}
+
+/* 키 힌트 배지: [Enter] */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.btn--primary .kbd {
+  border-color: color-mix(in srgb, var(--accent-ink) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-ink) 15%, transparent);
+  color: var(--accent-ink);
+}
+
+/* ── 칩과 세그먼트 ─────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip strong {
+  color: var(--text);
+}
+
+.segment {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.segment button {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segment button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ── 카드 ─────────────────────────────── */
+.card {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card__title {
+  margin-bottom: var(--space-4);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+/* ── 통계 타일 ─────────────────────────── */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.stat__value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.stat__label {
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat.is-best {
+  background: var(--accent-soft);
+}
+
+.stat.is-best .stat__label::after {
+  content: " · 최고!";
+  color: var(--accent);
+}
+
+/* ── 키캡 넘패드 ───────────────────────── */
+.keypad {
+  --cap: 64px;
+  --gap: 8px;
+  --depth: 5px;
+  display: grid;
+  grid-template-columns: repeat(4, var(--cap));
+  grid-template-rows: repeat(5, var(--cap));
+  gap: var(--gap);
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.06);
+  user-select: none;
+}
+
+.keypad--sm {
+  --cap: 38px;
+  --gap: 5px;
+  --depth: 3px;
+  padding: 8px;
+  border-radius: 14px;
+}
+
+.keycap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--key-face);
+  box-shadow: 0 var(--depth) 0 var(--key-side), 0 calc(var(--depth) + 2px) 8px rgba(0, 0, 0, 0.12);
+  color: var(--key-text);
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  transform: translateY(0);
+  transition: transform 0.08s var(--ease-out), box-shadow 0.08s var(--ease-out), background 0.15s, opacity 0.2s;
+}
+
+.keypad--sm .keycap {
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.keycap.is-small {
+  font-size: 14px;
+}
+
+.keypad--sm .keycap.is-small {
+  font-size: 9px;
+}
+
+.keycap.is-inert {
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.keypad--sm .keycap.is-inert {
+  font-size: 9px;
+}
+
+/* 5번 키의 돌기 */
+.keycap.is-home::after {
+  content: "";
+  position: absolute;
+  bottom: 18%;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.keypad--sm .keycap.is-home::after {
+  width: 8px;
+  height: 2px;
+}
+
+.keycap.is-dim {
+  opacity: 0.35;
+}
+
+.keycap.is-target {
+  background: var(--key-target);
+  box-shadow: 0 var(--depth) 0 var(--key-target-side), 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent), 0 10px 24px color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent-ink);
+  animation: target-breathe 1.6s ease-in-out infinite;
+}
+
+.keycap.is-pressed {
+  transform: translateY(var(--depth));
+  box-shadow: 0 0 0 var(--key-side), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.keycap.is-good {
+  background: var(--good);
+  color: #fff;
+}
+
+.keycap.is-bad {
+  background: var(--bad);
+  color: #fff;
+  animation: shake 0.22s linear;
+}
+
+/* 히트맵: --heat 0~1 */
+.keycap.has-heat {
+  background: color-mix(in srgb, var(--bad) calc(var(--heat) * 85%), var(--key-face));
+}
+
+@keyframes target-breathe {
+  50% {
+    box-shadow: 0 var(--depth) 0 var(--key-target-side), 0 0 0 8px color-mix(in srgb, var(--accent) 12%, transparent), 0 10px 24px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
+@keyframes shake {
+  25% { translate: -4px 0; }
+  75% { translate: 4px 0; }
+}
+
+/* ── 경고 배너 ─────────────────────────── */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 14px;
+  font-weight: 600;
+  animation: pop-in 0.25s var(--ease-spring);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+
+/* ── 그래프 ────────────────────────────── */
+.chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.chart__grid {
+  stroke: var(--line);
+  stroke-dasharray: 3 4;
+}
+
+.chart__tick {
+  fill: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.chart__area {
+  fill: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.chart__line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart__line--kpm {
+  stroke: var(--accent);
+}
+
+.chart__line--acc {
+  stroke: var(--good);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.chart__dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.legend {
+  display: flex;
+  gap: var(--space-4);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.legend span::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: middle;
+  background: var(--accent);
+}
+
+.legend span.is-acc::before {
+  background: var(--good);
+}
+
+/* ── 축하 효과 ─────────────────────────── */
+.confetti {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+}
