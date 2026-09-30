@@ -1,6 +1,7 @@
 // 세션 상태 기계: 판정, 콤보, 종료 조건 (DOM 없음)
 import { createRng, keyTarget, numberItem, exprItem, calcProblem } from './generator.js';
 import { LEVELS } from './keys.js';
+import { pointsFor } from './score.js';
 
 export const MODES = {
   keys: { id: 'keys', name: '키 위치 익히기', short: '키 위치', strict: true, defaultCount: 30, unit: '타' },
@@ -47,8 +48,24 @@ export function createSession(opts) {
     maxCombo: 0,
     attempts: {}, // 기대 키별 시도 수
     missMap: {}, // 기대 키별 오타 수
+    score: 0,
+    lastAt: null, // 직전 정타(엄격) 또는 제출(계산) 시각: 속도 측정 기준
+    unitMs: 0, // 측정된 단위 시간 합
+    units: 0, // 측정된 단위 수
     item: null,
   };
+
+  // 정타 1개(엄격) 또는 정답 1문제(계산)의 점수와 속도
+  function score(now, firstOfItem) {
+    const dtMs = s.lastAt === null ? null : now - s.lastAt;
+    if (dtMs !== null) {
+      s.unitMs += dtMs;
+      s.units++;
+    }
+    const r = pointsFor({ mode: mode.id, difficulty, dtMs, combo: s.combo, firstOfItem });
+    s.score += r.points;
+    return { ...r, dtMs };
+  }
 
   function nextItem() {
     const prev = s.item;
@@ -113,10 +130,12 @@ export function createSession(opts) {
     s.hits++;
     s.combo++;
     s.maxCombo = Math.max(s.maxCombo, s.combo);
+    const pts = score(now, s.item.pos === 0);
+    s.lastAt = now;
     s.item.pos++;
-    if (s.item.pos < s.item.target.length) return { type: 'hit', token, combo: s.combo };
+    if (s.item.pos < s.item.target.length) return { type: 'hit', token, combo: s.combo, ...pts };
     const end = completeItem(now);
-    return { type: 'item', token, combo: s.combo, end };
+    return { type: 'item', token, combo: s.combo, end, ...pts };
   }
 
   function pressCalc(token, now) {
@@ -129,21 +148,26 @@ export function createSession(opts) {
     }
     if (token === 'Enter') {
       if (item.typed === '') return { type: 'ignored' };
+      s.lastAt ??= s.startedAt;
       s.submitted++;
       const answer = item.answer;
       const ok = item.typed === answer;
+      let pts = { points: 0, speed: null, dtMs: null };
       if (ok) {
         s.solved++;
         s.hits += answer.length + 1;
         s.combo++;
         s.maxCombo = Math.max(s.maxCombo, s.combo);
+        pts = score(now, true);
       } else {
         s.misses++;
         s.combo = 0;
       }
+      // 첫 문제는 첫 키 입력부터, 이후 문제는 직전 제출부터 잰다
+      s.lastAt = now;
       const typed = item.typed;
       const end = completeItem(now);
-      return { type: ok ? 'solved' : 'wrong', typed, answer, combo: s.combo, end };
+      return { type: ok ? 'solved' : 'wrong', typed, answer, combo: s.combo, end, ...pts };
     }
     if (!/^[0-9.\-]$/.test(token)) return { type: 'ignored' };
     if (item.typed.length >= CALC_MAX_LEN) return { type: 'ignored' };
@@ -188,7 +212,11 @@ export function createSession(opts) {
         lengthType: length.type,
         date: new Date(s.startedAt ?? now).toISOString(),
         durationMs,
-        kpm: Math.round((strict ? s.hits : s.keystrokes) / minutes),
+        // 계산 모드도 맞힌 문제의 키만 센다 (Backspace·오답 타이핑 제외)
+        kpm: Math.round(s.hits / minutes),
+        score: s.score,
+        // 엄격: 정타 사이 평균 시간 / 계산: 제출한 문제당 평균 시간
+        avgMs: strict ? (s.units ? Math.round(s.unitMs / s.units) : null) : (s.submitted ? Math.round(durationMs / s.submitted) : null),
         accuracy: strict
           ? (judged ? s.hits / judged : 0)
           : (s.submitted ? s.solved / s.submitted : 0),
