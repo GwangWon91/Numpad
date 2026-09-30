@@ -115,6 +115,29 @@ try {
     assert.equal(await sessions(), 2, '중단한 세션은 저장하지 않음');
   });
 
+  await step('콤보 마일스톤 배지가 문제를 가리지 않는다', async () => {
+    await home();
+    await b.press('1');
+    await b.press('Enter');
+    await b.waitFor('document.body.dataset.screen === "play"');
+    for (let k = 0; k < 10; k++) await b.press(await target());
+    await b.sleep(200);
+    const r = await b.eval(`(() => {
+      const a = document.querySelector('.burst').getBoundingClientRect();
+      const p = document.querySelector('.prompt').getBoundingClientRect();
+      const c = document.querySelector('.combo').getBoundingClientRect();
+      const hit = (x, y) => !(x.right <= y.left || y.right <= x.left || x.bottom <= y.top || y.bottom <= x.top);
+      return { text: document.querySelector('.burst').textContent, opacity: +getComputedStyle(document.querySelector('.burst')).opacity, prompt: hit(a, p), combo: hit(a, c) };
+    })()`);
+    assert.equal(r.text, '10 COMBO!');
+    assert.ok(r.opacity > 0.5, '배지가 보임');
+    assert.equal(r.prompt, false, '문제와 겹치지 않음');
+    assert.equal(r.combo, false, '콤보 숫자와 겹치지 않음');
+    await shot('02b-milestone');
+    await b.press(null, { code: 'Escape', key: 'Escape', vk: 27 });
+    await b.waitFor('document.body.dataset.screen === "home"');
+  });
+
   await step('숫자 입력: Enter까지 쳐야 다음 문항, 10문항 완료', async () => {
     await b.press('2');
     await b.press('Enter');

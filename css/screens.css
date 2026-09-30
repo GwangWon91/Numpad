@@ -484,36 +484,55 @@
   }
 }
 
+/* 마일스톤 배지: 콤보 줄 오른쪽에서 가로로 튀어나옴 (문제를 가리지 않음) */
 .burst {
   position: absolute;
   left: 50%;
-  top: -90px;
+  top: 50%;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fire) 14%, transparent);
   color: var(--fire);
   font-family: var(--font-mono);
-  font-size: 34px;
+  font-size: 18px;
   font-weight: 800;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  translate: -50% 0;
+  translate: 72px -50%;
+  transform-origin: left center;
 }
 
 .burst.is-on {
-  animation: burst 0.9s var(--ease-out);
+  animation: burst 1.1s var(--ease-out);
 }
 
 @keyframes burst {
   0% {
     opacity: 0;
-    transform: scale(0.6);
+    transform: translateX(-12px) scale(0.7);
   }
-  20% {
+  18% {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translateX(0) scale(1.12);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(6px) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-40px) scale(1);
+    transform: translateX(18px) scale(1);
+  }
+}
+
+.progress.is-flash {
+  animation: progress-flash 0.6s var(--ease-out);
+}
+
+@keyframes progress-flash {
+  30% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fire) 35%, transparent), 0 0 18px color-mix(in srgb, var(--fire) 55%, transparent);
   }
 }
 

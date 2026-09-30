@@ -128,6 +128,7 @@ export function playScreen(ctx, modeId) {
       sfx.milestone();
       burst.textContent = `${combo} COMBO!`;
       replay(burst, 'is-on');
+      replay(progress, 'is-flash');
     }
   }
 
