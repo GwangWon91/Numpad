@@ -28,6 +28,7 @@ function demoSessions() {
         id: `demo${d}${k}`, mode, level: mode === 'keys' ? 4 : null, difficulty: mode === 'keys' ? null : 'normal',
         lengthType: 'count', date: date.toISOString(), durationMs: 60_000 + d * 1000, kpm, accuracy,
         items: 10, solved: mode === 'calc' ? 9 : null, maxCombo: 12 + d * 3 + k * 5,
+        score: Math.round(kpm * 6 * accuracy ** 2), avgMs: Math.round(60_000 / kpm),
         attempts: { 7: 20, 8: 18, 9: 16, 4: 22, 5: 25, 6: 20, 1: 15, 2: 17, 3: 14, 0: 12, '.': 10, '+': 6, '-': 6, '*': 5, '/': 5 },
         misses: { 7: 2, 9: 3, 1: 1, 0: 2, '.': 3, '/': 2, '*': 1 },
       });
