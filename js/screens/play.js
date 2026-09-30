@@ -60,9 +60,11 @@ export function playScreen(ctx, modeId) {
   let chars = [];
   let answerEl = null;
   let finished = false;
+  let phraseStep = 0; // 효과음 프레이즈 위치: 문항마다 처음부터
 
   function renderItem() {
     const item = s.item;
+    phraseStep = 0;
     prompt.replaceChildren();
     if (modeId === 'keys') {
       const t = item.target[0];
@@ -163,7 +165,7 @@ export function playScreen(ctx, modeId) {
     switch (ev.type) {
       case 'hit':
         keypad?.press(token, 'good');
-        sfx.hit(ev.combo);
+        sfx.hit(phraseStep++, ev.combo);
         markCursor();
         updateTarget();
         updateCombo(ev.combo);
@@ -177,7 +179,8 @@ export function playScreen(ctx, modeId) {
         break;
       case 'item':
         keypad?.press(token, 'good');
-        if (modeId === 'keys') sfx.hit(ev.combo);
+        // 키 위치 모드는 한 키가 한 문항이라 콤보로 프레이즈를 이어 간다(음은 한 옥타브 안에서 순환)
+        if (modeId === 'keys') sfx.hit(ev.combo - 1, ev.combo);
         else sfx.item();
         updateCombo(ev.combo);
         if (ev.end) finish();
@@ -185,6 +188,7 @@ export function playScreen(ctx, modeId) {
         break;
       case 'typed':
         keypad?.press(token);
+        if (token !== 'Back') sfx.hit(phraseStep++, s.combo, { soft: true });
         answerEl.textContent = ev.typed;
         answerEl.dataset.empty = String(ev.typed === '');
         break;
