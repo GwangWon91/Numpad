@@ -1,0 +1,106 @@
+/* 디자인 토큰 — 색, 간격, 폰트, 그림자. 라이트가 기본, 다크는 아래에서 재정의 */
+:root {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --bg: #f4f2ee;
+  --bg-grad: radial-gradient(1200px 600px at 50% -10%, #ffffff 0%, rgba(255, 255, 255, 0) 70%);
+  --surface: #ffffff;
+  --surface-2: #ece9e3;
+  --line: #dcd7ce;
+  --text: #1d1b18;
+  --text-2: #6b655c;
+  --text-3: #9b948a;
+
+  --accent: #5b5bd6;
+  --accent-soft: #e6e6fb;
+  --accent-ink: #ffffff;
+  --good: #1f9d6b;
+  --good-soft: #d9f3e8;
+  --bad: #e5484d;
+  --bad-soft: #fde2e2;
+  --warn: #c47a00;
+  --warn-soft: #fff1d6;
+  --fire: #ff7a1a;
+
+  --key-face: #fbfaf8;
+  --key-side: #cfc9bf;
+  --key-text: #2a2723;
+  --key-target: var(--accent);
+  --key-target-side: #3f3fae;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --shadow: 0 1px 2px rgba(29, 27, 24, 0.06), 0 8px 24px rgba(29, 27, 24, 0.06);
+  --shadow-lg: 0 2px 4px rgba(29, 27, 24, 0.06), 0 20px 48px rgba(29, 27, 24, 0.12);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131316;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #23233a 0%, rgba(19, 19, 22, 0) 70%);
+    --surface: #1c1c21;
+    --surface-2: #26262d;
+    --line: #34343d;
+    --text: #efeef3;
+    --text-2: #a3a1ad;
+    --text-3: #6f6d78;
+    --accent: #8b8bff;
+    --accent-soft: #2a2a4d;
+    --accent-ink: #0f0f1a;
+    --good: #3dd68c;
+    --good-soft: #173a2b;
+    --bad: #ff6369;
+    --bad-soft: #43191b;
+    --warn: #ffb224;
+    --warn-soft: #3a2a0c;
+    --key-face: #2b2b33;
+    --key-side: #15151a;
+    --key-text: #e8e7ee;
+    --key-target-side: #5252c7;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.3), 0 20px 48px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #131316;
+  --bg-grad: radial-gradient(1200px 600px at 50% -10%, #23233a 0%, rgba(19, 19, 22, 0) 70%);
+  --surface: #1c1c21;
+  --surface-2: #26262d;
+  --line: #34343d;
+  --text: #efeef3;
+  --text-2: #a3a1ad;
+  --text-3: #6f6d78;
+  --accent: #8b8bff;
+  --accent-soft: #2a2a4d;
+  --accent-ink: #0f0f1a;
+  --good: #3dd68c;
+  --good-soft: #173a2b;
+  --bad: #ff6369;
+  --bad-soft: #43191b;
+  --warn: #ffb224;
+  --warn-soft: #3a2a0c;
+  --key-face: #2b2b33;
+  --key-side: #15151a;
+  --key-text: #e8e7ee;
+  --key-target-side: #5252c7;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.3), 0 20px 48px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
