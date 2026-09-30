@@ -350,7 +350,7 @@
 }
 
 .char.is-current {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .char.is-current::after {
