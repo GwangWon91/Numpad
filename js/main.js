@@ -70,6 +70,7 @@ function resolve(path) {
 
 function render() {
   current?.destroy?.();
+  document.querySelectorAll('.confetti').forEach((c) => c.remove());
   const path = location.hash.replace(/^#/, '') || '/';
   current = resolve(path)();
   view.replaceChildren(current.el);
