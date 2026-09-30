@@ -95,6 +95,9 @@ try {
     const acc = await b.eval('document.querySelectorAll(".stat__value")[1].textContent');
     assert.equal(acc, '96.8%', '30타 중 오타 1 → 30/31');
     assert.equal(await b.eval('document.querySelectorAll(".weak-list li").length'), 1);
+    const saved = await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).sessions[0]');
+    assert.ok(saved.score > 0 && saved.avgMs > 0, '기록에 점수·평균 시간 저장');
+    assert.equal(await b.eval('document.querySelector(".result__score-n").textContent.replace(/,/g, "")'), String(saved.score));
     await shot('03-result-first');
   });
 
@@ -133,6 +136,11 @@ try {
     assert.ok(r.opacity > 0.5, '배지가 보임');
     assert.equal(r.prompt, false, '문제와 겹치지 않음');
     assert.equal(r.combo, false, '콤보 숫자와 겹치지 않음');
+    const hudScore = await b.eval('Number(document.querySelector(".hud__score strong").textContent.replace(/,/g, ""))');
+    assert.ok(hudScore >= 100, `10타 정타 점수 누적: ${hudScore}`);
+    assert.match(await b.eval('document.querySelector(".gain").textContent'), /^\+\d+/);
+    await b.press(await target());
+    assert.ok(await b.eval(`Number(document.querySelector(".hud__score strong").textContent.replace(/,/g, "")) > ${hudScore}`), '정타마다 점수 증가');
     await shot('02b-milestone');
     await b.press(null, { code: 'Escape', key: 'Escape', vk: 27 });
     await b.waitFor('document.body.dataset.screen === "home"');
@@ -169,7 +177,8 @@ try {
     await b.press(null, { code: 'Digit4', key: '4', vk: 52 });
     assert.match(await b.eval('document.querySelector(".play__banner").textContent'), /넘패드/);
     await shot('05-play-warning');
-    assert.equal(await b.eval('document.querySelector(".hud__stat:nth-child(2) strong").textContent'), '—', '판정 없음');
+    assert.equal(await b.eval('document.querySelector(".hud__stat:nth-child(4) strong").textContent'), '—', '판정 없음');
+    assert.equal(await b.eval('document.querySelector(".hud__score strong").textContent'), '0', '경고 입력은 점수 없음');
   });
 
   await step('빠른 계산: 정답·오답 판정, Backspace, 정답률 기록', async () => {
@@ -240,6 +249,19 @@ try {
     await shot('08-history');
     await b.press('4');
     assert.equal(await b.eval('document.querySelectorAll(".sessions tbody tr").length'), 1, '계산 모드만');
+  });
+
+  await step('점수 도입 전 기록이 섞여 있어도 기록 화면이 동작한다', async () => {
+    await b.eval(`(() => {
+      const d = JSON.parse(localStorage.getItem('numpad.v1'));
+      d.sessions.unshift({ id: 'legacy', mode: 'keys', level: 1, date: new Date(Date.now() - 86400000).toISOString(), durationMs: 60000, kpm: 120, accuracy: 0.9, items: 30, maxCombo: 12, attempts: {}, misses: {} });
+      localStorage.setItem('numpad.v1', JSON.stringify(d));
+    })()`);
+    await b.goto(base + '#/history');
+    await b.waitFor('document.body.dataset.screen === "history"');
+    assert.equal(await b.eval('document.querySelectorAll(".sessions thead th").length'), 7);
+    assert.match(await b.eval('document.querySelector(".legend span").textContent'), /점수/);
+    assert.ok(await b.eval('!!document.querySelector(".chart .chart__dot")'));
   });
 
   await step('새로고침해도 기록이 유지된다', async () => {

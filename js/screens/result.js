@@ -11,6 +11,7 @@ const INPUT_GUARD_MS = 700; // 마지막 Enter 연타로 바로 재시작되지 
 
 function headline(record, pbs) {
   if (pbs.includes('first')) return { emoji: '🌱', title: '첫 기록 완료!', sub: '이제부터 이 기록을 넘어서 봐요.' };
+  if (pbs.includes('score')) return { emoji: '🏆', title: '최고 점수 갱신!', sub: '빠르고 정확하게, 끊지 않고. 딱 그거예요.' };
   if (pbs.includes('kpm')) return { emoji: '🎉', title: '최고 속도 갱신!', sub: '손이 넘패드를 기억하기 시작했어요.' };
   if (pbs.includes('maxCombo')) return { emoji: '🔥', title: '최고 콤보 갱신!', sub: '흐름을 끊지 않는 힘이 붙고 있어요.' };
   if (pbs.includes('accuracy')) return { emoji: '🎯', title: '최고 정확도 갱신!', sub: '정확함이 곧 속도가 됩니다.' };
@@ -36,9 +37,17 @@ export function resultScreen(ctx) {
   const celebrate = pbs.length > 0 && !pbs.includes('first');
 
   const tile = (value, label, key) => h(`div.stat${pbs.includes(key) ? '.is-best' : ''}`, h('span.stat__value', value), h('span.stat__label', label));
+  const scoreBlock = h(
+    `div.result__score${pbs.includes('score') ? '.is-best' : ''}`,
+    { title: '정타마다 기본점 × 속도 × 콤보 배율' },
+    h('span.result__score-n.mono', (record.score ?? 0).toLocaleString('ko-KR')),
+    h('span.result__score-label', pbs.includes('score') ? '점 · 최고!' : '점'),
+  );
   const tiles = h(
     'div.result__tiles',
-    tile(String(record.kpm), '타/분', 'kpm'),
+    mode.strict
+      ? tile(String(record.kpm), '타/분', 'kpm')
+      : tile(record.avgMs ? `${(record.avgMs / 1000).toFixed(1)}초` : '—', '문제당 평균', null),
     tile(formatPercent(record.accuracy), mode.strict ? '정확도' : '정답률', 'accuracy'),
     tile(formatDuration(record.durationMs), '시간', null),
     tile(String(record.maxCombo), '최고 콤보', 'maxCombo'),
@@ -86,6 +95,7 @@ export function resultScreen(ctx) {
       h('h1.result__title', head.title),
       h('p.result__sub', `${mode.name} · ${head.sub}`),
     ),
+    scoreBlock,
     tiles,
     weakSection,
     h('div.result__actions', retryBtn, homeBtn, histBtn),

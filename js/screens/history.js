@@ -37,11 +37,16 @@ export function historyScreen(ctx) {
       return;
     }
 
-    const points = series(all, filter, 30);
+    // 점수가 있는 기록은 점수로, 점수 도입 전 기록만 있으면 타/분으로 그린다
+    const recentPoints = series(all, filter, 30);
+    const scored = recentPoints.filter((p) => p.score !== null);
+    const useScore = scored.length > 0;
+    const points = (useScore ? scored : recentPoints).map((p) => ({ ...p, value: useScore ? p.score : p.kpm }));
+    const unit = useScore ? '점' : '타/분';
     const chartCard = h(
       'section.card',
-      h('div.history__chart-head', h('h2.card__title', `최근 ${points.length}세션 추이`), h('div.legend', h('span', '타/분'), h('span.is-acc', '정확도'))),
-      points.length ? lineChart(points) : h('p.empty__sub', '이 모드의 기록이 아직 없어요.'),
+      h('div.history__chart-head', h('h2.card__title', `최근 ${points.length}세션 추이`), h('div.legend', h('span', useScore ? '점수' : '타/분'), h('span.is-acc', '정확도'))),
+      points.length ? lineChart(points, { unit }) : h('p.empty__sub', '이 모드의 기록이 아직 없어요.'),
     );
 
     const bests = bestByMode(all);
@@ -53,7 +58,10 @@ export function historyScreen(ctx) {
           `div.best-card${filter === m.id ? '.is-active' : ''}`,
           h('span.best-card__name', m.name),
           b
-            ? [h('span.best-card__kpm.mono', String(b.kpm), h('small', ' 타/분')), h('span.best-card__meta', `정확도 ${formatPercent(b.accuracy)} · 콤보 ${b.maxCombo} · ${b.count}회`)]
+            ? [
+                h('span.best-card__kpm.mono', b.score.toLocaleString('ko-KR'), h('small', ' 점')),
+                h('span.best-card__meta', `${b.kpm}타/분 · 정확도 ${formatPercent(b.accuracy)} · 콤보 ${b.maxCombo} · ${b.count}회`),
+              ]
             : h('span.best-card__meta', '기록 없음'),
         );
       }),
@@ -75,7 +83,7 @@ export function historyScreen(ctx) {
       h('h2.card__title', '최근 세션'),
       h(
         'table.sessions',
-        h('thead', h('tr', ['날짜', '모드', '타/분', '정확도', '콤보', '시간'].map((t) => h('th', t)))),
+        h('thead', h('tr', ['날짜', '모드', '점수', '타/분', '정확도', '콤보', '시간'].map((t) => h('th', t)))),
         h(
           'tbody',
           list.slice(-12).reverse().map((s) =>
@@ -83,6 +91,7 @@ export function historyScreen(ctx) {
               'tr',
               h('td', new Date(s.date).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })),
               h('td', MODES[s.mode]?.short ?? s.mode),
+              h('td.mono.sessions__score', s.score === undefined ? '—' : s.score.toLocaleString('ko-KR')),
               h('td.mono', String(s.kpm)),
               h('td.mono', formatPercent(s.accuracy)),
               h('td.mono', String(s.maxCombo)),

@@ -7,7 +7,8 @@ const rec = (mode, kpm, accuracy, maxCombo, date = '2026-10-01T03:00:00') => ({ 
 
 test('bestByMode와 personalBests', () => {
   const past = [rec('keys', 100, 0.9, 20), rec('keys', 120, 0.85, 30), rec('calc', 50, 1, 5)];
-  assert.deepEqual(bestByMode(past).keys, { kpm: 120, accuracy: 0.9, maxCombo: 30, count: 2 });
+  assert.deepEqual(bestByMode(past).keys, { score: 0, kpm: 120, accuracy: 0.9, maxCombo: 30, count: 2 });
+  assert.deepEqual(personalBests(past, { ...rec('keys', 90, 0.8, 10), score: 500 }), ['score'], '점수 없던 기록보다 점수가 높음');
   assert.deepEqual(personalBests(past, rec('keys', 130, 0.8, 31)), ['kpm', 'maxCombo']);
   assert.deepEqual(personalBests(past, rec('keys', 90, 0.8, 10)), []);
   assert.deepEqual(personalBests(past, rec('expr', 10, 0.5, 1)), ['first']);

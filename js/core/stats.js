@@ -1,12 +1,12 @@
 // 기록 분석: 최고 기록, 약한 키, 추이 (순수 함수)
 
-const METRICS = ['kpm', 'accuracy', 'maxCombo'];
+const METRICS = ['score', 'kpm', 'accuracy', 'maxCombo'];
 
-/** 모드별 최고 기록 { mode: { kpm, accuracy, maxCombo, count } } */
+/** 모드별 최고 기록 { mode: { score, kpm, accuracy, maxCombo, count } }. 점수가 없던 이전 기록은 0점 취급 */
 export function bestByMode(sessions) {
   const out = {};
   for (const s of sessions) {
-    const b = (out[s.mode] ??= { kpm: 0, accuracy: 0, maxCombo: 0, count: 0 });
+    const b = (out[s.mode] ??= { score: 0, kpm: 0, accuracy: 0, maxCombo: 0, count: 0 });
     b.count++;
     for (const m of METRICS) b[m] = Math.max(b[m], s[m] ?? 0);
   }
@@ -66,7 +66,7 @@ export function streakDays(sessions, now = new Date()) {
 /** 그래프용 최근 n개 세션 */
 export function series(sessions, mode, n = 30) {
   const list = mode ? sessions.filter((s) => s.mode === mode) : sessions;
-  return list.slice(-n).map((s) => ({ date: s.date, kpm: s.kpm, accuracy: s.accuracy, mode: s.mode }));
+  return list.slice(-n).map((s) => ({ date: s.date, score: s.score ?? null, kpm: s.kpm, accuracy: s.accuracy, mode: s.mode }));
 }
 
 export function localDateKey(d) {
