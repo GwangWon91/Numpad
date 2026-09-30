@@ -7,6 +7,32 @@
 
 **바로 연습하기 →** https://gwangwon91.github.io/Numpad/
 
+![홈 화면](docs/images/home-light.png)
+
+| 연습 | 결과 |
+|---|---|
+| ![숫자 입력 연습](docs/images/play-number.png) | ![결과 화면](docs/images/result.png) |
+
+| 기록 | 다크 모드 |
+|---|---|
+| ![기록 화면](docs/images/history.png) | ![다크 모드 홈](docs/images/home-dark.png) |
+
+## 재미 요소
+
+- 🔥 **콤보**: 연속으로 맞히면 콤보가 오르고, 효과음 음높이도 함께 올라갑니다
+- 🎉 **최고 기록 축하**: 속도·정확도·콤보 최고 기록을 넘으면 색종이가 터집니다
+- 🅢 **정확도 등급**: S(99%) · A(96%) · B(90%) · C
+- 🗺️ **약한 키 히트맵**: 자주 틀리는 키가 넘패드 위에 붉게 표시됩니다
+- 📈 **성장 그래프**와 🔥 **연속 연습 일수**
+
+## 넘패드만으로 조작
+
+| 화면 | 키 |
+|---|---|
+| 홈 | `1`–`4` 모드 · `+` `−` 레벨/난이도 · `*` 문항↔60초 · `/` 화면 넘패드 표시 · `Enter` 시작 · `0` 기록 |
+| 연습 | 넘패드로 입력 · `Esc` 그만하기 |
+| 결과 | `Enter` 다시 하기 · `0` 홈 · `.` 기록 |
+
 ## 연습 모드
 
 | 모드 | 하는 일 |
@@ -36,7 +62,10 @@ python -m http.server 8080
 ```bash
 npm test                       # 순수 로직 단위 테스트 (node --test)
 npm run test:e2e               # 헤드리스 Chrome으로 실제 키 입력 E2E 테스트
+node tests/e2e/screenshots.mjs # README 스크린샷 다시 만들기
 ```
+
+테스트와 도구는 Node 22 이상, Chrome 또는 Edge만 있으면 되고 설치할 패키지는 없습니다.
 
 ## 구조
 
@@ -56,6 +85,7 @@ tests/      단위 테스트, E2E 테스트
 
 - [요구사항 명세](docs/requirements.md)
 - [설계 문서](docs/design.md)
+- [테스트 체크리스트](docs/test-checklist.md)
 
 ## 라이선스
 
