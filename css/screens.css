@@ -678,6 +678,8 @@
 }
 
 .result__emoji {
+  width: fit-content;
+  margin: 0 auto;
   font-size: 56px;
   animation: combo-pop 0.5s var(--ease-spring);
 }
