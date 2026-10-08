@@ -155,6 +155,14 @@
   color: var(--text);
 }
 
+/* 공식 기록·기록 도전: 일반 설정 칩과 구분되는 강조색 */
+.chip--official,
+.chip--official strong {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .segment {
   display: inline-flex;
   padding: 3px;
@@ -450,3 +458,36 @@
   pointer-events: none;
   z-index: 50;
 }
+
+/* ── 아이콘: 라인 기본, 강조는 듀오톤 배지 ── */
+.icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.18em;
+}
+
+.icon-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 2em;
+  height: 2em;
+  flex: none;
+  border-radius: 30%;
+}
+
+.icon-badge .icon {
+  width: 55%;
+  height: 55%;
+  vertical-align: 0;
+}
+
+.icon-badge--accent { background: var(--accent-soft); color: var(--accent); }
+.icon-badge--good { background: var(--good-soft); color: var(--good); }
+.icon-badge--warn { background: var(--warn-soft); color: var(--warn); }
+.icon-badge--fire { background: color-mix(in srgb, var(--fire) 16%, transparent); color: var(--fire); }
