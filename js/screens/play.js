@@ -5,6 +5,7 @@ import { personalBests, officialBest, formatDuration, formatPercent } from '../c
 import { sfx } from '../core/sound.js';
 import { h, replay } from '../ui/dom.js';
 import { createKeypad } from '../ui/keypad.js';
+import { icon } from '../ui/icons.js';
 
 const MILESTONES = new Set([10, 25, 50, 75, 100, 150, 200, 300, 500]);
 
@@ -29,14 +30,14 @@ export function playScreen(ctx, modeId, overrides) {
   const detail = modeId === 'keys' ? `L${st.level} ${LEVELS.find((l) => l.id === st.level)?.name ?? ''}` : DIFF_NAME[st.difficulty];
   const hud = h(
     'div.hud',
-    h('button.btn.btn--ghost', { type: 'button', onclick: () => ctx.navigate('/') }, '← ', h('span.kbd', 'Esc')),
-    h('div.hud__title', h('strong', mode.name), h('span.chip', detail), length.type === 'time' ? h('span.chip', '⏱ 타임어택') : null, overrides ? h('span.chip', '🏅 기록 도전') : null),
+    h('button.btn.btn--ghost', { type: 'button', onclick: () => ctx.navigate('/') }, icon('arrow-left'), h('span.kbd', 'Esc')),
+    h('div.hud__title', h('strong', mode.name), h('span.chip', detail), length.type === 'time' ? h('span.chip', icon('timer'), '타임어택') : null, overrides ? h('span.chip.chip--official', icon('medal'), '기록 도전') : null),
     h(
       'div.hud__stats',
       h('span.hud__score', { title: '점수 = 정타마다 기본점 × 속도 × 콤보 배율' }, scoreEl, h('small', '점')),
-      h('span.hud__stat', '⏱ ', timerEl),
-      h('span.hud__stat', { title: mode.strict ? '맞힌 키 / 분' : '문제당 평균 시간' }, '⚡ ', speedEl, h('small', ` ${speedUnit}`)),
-      h('span.hud__stat', '✓ ', accEl),
+      h('span.hud__stat', icon('timer'), timerEl),
+      h('span.hud__stat', { title: mode.strict ? '맞힌 키 / 분' : '문제당 평균 시간' }, icon('zap'), speedEl, h('small', ` ${speedUnit}`)),
+      h('span.hud__stat', icon('target'), accEl),
       length.type === 'count' ? h('span.hud__stat', progEl) : null,
     ),
   );
@@ -131,7 +132,7 @@ export function playScreen(ctx, modeId, overrides) {
       comboEl.textContent = '';
       return;
     }
-    comboEl.replaceChildren(h('span.combo__fire', '🔥'), h('span.combo__n.mono', String(combo)), h('span.combo__label', '콤보'));
+    comboEl.replaceChildren(h('span.combo__fire', icon('flame')), h('span.combo__n.mono', String(combo)), h('span.combo__label', '콤보'));
     comboEl.className = `combo is-on${combo >= 25 ? ' is-hot' : ''}${combo >= 50 ? ' is-blazing' : ''}`;
     replay(comboEl, 'is-pop');
     if (MILESTONES.has(combo)) {
@@ -142,10 +143,10 @@ export function playScreen(ctx, modeId, overrides) {
     }
   }
 
-  // 정타 점수 팝업: 콤보 왼쪽에 +점수, 목표보다 훨씬 빠르면 ⚡
+  // 정타 점수 팝업: 콤보 왼쪽에 +점수, 목표보다 훨씬 빠르면 번개 아이콘
   function showGain(ev) {
     if (!ev.points) return;
-    gain.textContent = `+${ev.points}${ev.speed >= 1.5 ? ' ⚡' : ''}`;
+    gain.replaceChildren(`+${ev.points}`, ev.speed >= 1.5 ? icon('zap') : '');
     gain.classList.toggle('is-fast', ev.speed >= 1.5);
     replay(gain, 'is-on');
     replay(scoreEl, 'is-bump');
@@ -153,7 +154,7 @@ export function playScreen(ctx, modeId, overrides) {
 
   let bannerTimer;
   function warn(text) {
-    banner.replaceChildren(h('div.banner', '⚠ ', text));
+    banner.replaceChildren(h('div.banner', icon('triangle-alert'), text));
     clearTimeout(bannerTimer);
     bannerTimer = setTimeout(() => banner.replaceChildren(), 2600);
   }

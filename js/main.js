@@ -5,6 +5,7 @@ import { setSoundEnabled } from './core/sound.js';
 import { MODES } from './core/session.js';
 import { OFFICIAL } from './core/stats.js';
 import { h } from './ui/dom.js';
+import { icon } from './ui/icons.js';
 import { homeScreen } from './screens/home.js';
 import { playScreen } from './screens/play.js';
 import { resultScreen } from './screens/result.js';
@@ -13,7 +14,7 @@ import { historyScreen } from './screens/history.js';
 const app = document.getElementById('app');
 const storage = createStorage();
 const THEMES = ['auto', 'light', 'dark'];
-const THEME_ICON = { auto: '◐', light: '☀', dark: '☾' };
+const THEME_ICON = { auto: 'sun-moon', light: 'sun', dark: 'moon' };
 const THEME_NAME = { auto: '시스템', light: '라이트', dark: '다크' };
 
 const ctx = {
@@ -39,11 +40,11 @@ app.append(header, view);
 function applySettings() {
   const { sound, theme } = storage.settings;
   setSoundEnabled(sound);
-  soundBtn.textContent = sound ? '🔊' : '🔇';
+  soundBtn.replaceChildren(icon(sound ? 'volume-2' : 'volume-x'));
   soundBtn.title = soundBtn.ariaLabel = sound ? '효과음 끄기' : '효과음 켜기';
   if (theme === 'auto') document.documentElement.removeAttribute('data-theme');
   else document.documentElement.dataset.theme = theme;
-  themeBtn.textContent = THEME_ICON[theme];
+  themeBtn.replaceChildren(icon(THEME_ICON[theme]));
   themeBtn.title = themeBtn.ariaLabel = `테마: ${THEME_NAME[theme]}`;
 }
 

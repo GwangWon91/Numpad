@@ -53,8 +53,61 @@
 .hero__chips {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
   margin-top: var(--space-5);
+}
+
+/* 개인 최고: 일반 칩보다 크게, 강조색 */
+.pb-card {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 18px 10px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+  color: var(--accent);
+}
+
+.pb-card__badge {
+  font-size: 22px;
+  background: var(--surface);
+}
+
+.pb-card__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.pb-card__label {
+  font-weight: 800;
+}
+
+.pb-card__rule {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.pb-card__score {
+  margin-left: var(--space-2);
+  color: var(--text-2);
+  font-weight: 700;
+}
+
+.pb-card__score strong {
+  margin-right: 2px;
+  color: var(--accent);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.pb-card__empty {
+  margin-left: var(--space-2);
+  color: var(--text-2);
+  font-size: 13px;
 }
 
 .warmup {
@@ -233,6 +286,12 @@
   gap: var(--space-4);
   color: var(--text-2);
   font-size: 15px;
+}
+
+.hud__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .hud__stat strong {
@@ -501,6 +560,13 @@
   font-weight: 700;
 }
 
+.combo__fire {
+  display: inline-flex;
+  align-self: center;
+  color: var(--fire);
+  font-size: 22px;
+}
+
 .combo.is-hot .combo__fire {
   font-size: 1.3em;
 }
@@ -686,8 +752,8 @@
 
 .result__emoji {
   width: fit-content;
-  margin: 0 auto;
-  font-size: 56px;
+  margin: 0 auto var(--space-3);
+  font-size: 36px;
   animation: combo-pop 0.5s var(--ease-spring);
 }
 
@@ -931,7 +997,7 @@
 }
 
 .empty__emoji {
-  font-size: 44px;
+  font-size: 28px;
 }
 
 .empty__sub {

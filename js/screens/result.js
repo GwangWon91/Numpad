@@ -6,23 +6,24 @@ import { sfx } from '../core/sound.js';
 import { h } from '../ui/dom.js';
 import { createKeypad } from '../ui/keypad.js';
 import { confetti } from '../ui/confetti.js';
+import { icon, badge } from '../ui/icons.js';
 
 const INPUT_GUARD_MS = 700; // 마지막 Enter 연타로 바로 재시작되지 않게
 
 // 개인 최고 = 공식 기준 기록, 연습 최고 = 설정 상관없는 모드별 기록
 function headline(record, pbs, officialNew, officialPrev) {
-  if (officialNew && !officialPrev) return { emoji: '🏅', title: '첫 공식 기록!', sub: '이제 이 점수가 내 개인 최고예요.' };
-  if (officialNew) return { emoji: '🏅', title: '개인 최고 갱신!', sub: '공식 기준에서 내 최고 점수를 넘었어요.' };
-  if (pbs.includes('first')) return { emoji: '🌱', title: '첫 기록 완료!', sub: '이제부터 이 기록을 넘어서 봐요.' };
-  if (pbs.includes('score')) return { emoji: '🏆', title: '연습 최고 점수 갱신!', sub: '빠르고 정확하게, 끊지 않고. 딱 그거예요.' };
-  if (pbs.includes('kpm')) return { emoji: '🎉', title: '연습 최고 속도 갱신!', sub: '손이 넘패드를 기억하기 시작했어요.' };
-  if (pbs.includes('maxCombo')) return { emoji: '🔥', title: '연습 최고 콤보 갱신!', sub: '흐름을 끊지 않는 힘이 붙고 있어요.' };
-  if (pbs.includes('accuracy')) return { emoji: '🎯', title: '연습 최고 정확도 갱신!', sub: '정확함이 곧 속도가 됩니다.' };
+  if (officialNew && !officialPrev) return { icon: 'medal', tone: 'accent', title: '첫 공식 기록!', sub: '이제 이 점수가 내 개인 최고예요.' };
+  if (officialNew) return { icon: 'medal', tone: 'accent', title: '개인 최고 갱신!', sub: '공식 기준에서 내 최고 점수를 넘었어요.' };
+  if (pbs.includes('first')) return { icon: 'sprout', tone: 'good', title: '첫 기록 완료!', sub: '이제부터 이 기록을 넘어서 봐요.' };
+  if (pbs.includes('score')) return { icon: 'trophy', tone: 'warn', title: '연습 최고 점수 갱신!', sub: '빠르고 정확하게, 끊지 않고. 딱 그거예요.' };
+  if (pbs.includes('kpm')) return { icon: 'gauge', tone: 'accent', title: '연습 최고 속도 갱신!', sub: '손이 넘패드를 기억하기 시작했어요.' };
+  if (pbs.includes('maxCombo')) return { icon: 'flame', tone: 'fire', title: '연습 최고 콤보 갱신!', sub: '흐름을 끊지 않는 힘이 붙고 있어요.' };
+  if (pbs.includes('accuracy')) return { icon: 'target', tone: 'good', title: '연습 최고 정확도 갱신!', sub: '정확함이 곧 속도가 됩니다.' };
   const a = record.accuracy;
-  if (a >= 0.98) return { emoji: '✨', title: '거의 완벽해요', sub: '이제 속도를 조금 더 올려 봐요.' };
-  if (a >= 0.93) return { emoji: '👍', title: '좋아요, 정확합니다', sub: '같은 리듬으로 한 번 더!' };
-  if (a >= 0.85) return { emoji: '🙂', title: '조금만 더 정확하게', sub: '속도보다 정확도를 먼저 챙겨 봐요.' };
-  return { emoji: '🐢', title: '천천히, 정확하게', sub: '키를 보지 말고 5번 돌기를 기준으로 찾아요.' };
+  if (a >= 0.98) return { icon: 'sparkles', tone: 'accent', title: '거의 완벽해요', sub: '이제 속도를 조금 더 올려 봐요.' };
+  if (a >= 0.93) return { icon: 'thumbs-up', tone: 'good', title: '좋아요, 정확합니다', sub: '같은 리듬으로 한 번 더!' };
+  if (a >= 0.85) return { icon: 'smile', tone: 'warn', title: '조금만 더 정확하게', sub: '속도보다 정확도를 먼저 챙겨 봐요.' };
+  return { icon: 'turtle', tone: 'warn', title: '천천히, 정확하게', sub: '키를 보지 말고 5번 돌기를 기준으로 찾아요.' };
 }
 
 // 정확도 등급: 속도보다 정확도를 먼저 챙기도록
@@ -82,7 +83,7 @@ export function resultScreen(ctx) {
                 ),
               ),
             )
-          : h('p.result__clean', '틀린 키가 없어요. 깔끔합니다! ✨'),
+          : h('p.result__clean', '틀린 키가 없어요. 깔끔합니다! ', icon('sparkles')),
       ),
     );
   }
@@ -95,14 +96,14 @@ export function resultScreen(ctx) {
     'div.screen.result',
     h(
       'section.result__head',
-      h('div.result__emoji', head.emoji),
+      h('div.result__emoji', badge(head.icon, head.tone)),
       h(`div.grade.grade--${gradeOf(record.accuracy)}`, { title: '정확도 등급 (S 99% · A 96% · B 90%)' }, gradeOf(record.accuracy)),
       h('h1.result__title', head.title),
       h('p.result__sub', head.sub),
       h(
         'div.result__settings',
         settingsLabels(record).map((t) => h('span.chip', t)),
-        official ? h('span.chip.chip--official', { title: '개인 기록 기준: 수식 · 어려움 · 60초 · 넘패드 숨김' }, h('strong', officialNew ? '🏅 개인 최고 갱신' : '🏅 공식 기록')) : null,
+        official ? h('span.chip.chip--official', { title: '개인 기록 기준: 수식 · 어려움 · 60초 · 넘패드 숨김' }, icon('medal'), h('strong', officialNew ? '개인 최고 갱신' : '공식 기록')) : null,
       ),
     ),
     scoreBlock,
