@@ -23,6 +23,8 @@ async function step(name, fn) {
 const shot = async (name) => SHOTS && b.screenshot(resolve(SHOTS, `${name}.png`));
 const target = () => b.eval('document.querySelector(".keycap.is-target")?.dataset.token ?? null');
 const screen = () => b.eval('document.body.dataset.screen');
+// 화면에 남은 이모지 (Enter 키 기호 ⏎는 제외)
+const emoji = () => b.eval('(document.body.innerText.match(/\\p{Extended_Pictographic}/gu) ?? []).filter((c) => c !== "⏎").join("")');
 const sessions = () => b.eval('JSON.parse(localStorage.getItem("numpad.v1") ?? "{}").sessions?.length ?? 0');
 
 async function playStrict({ wrongAt = -1 } = {}) {
@@ -51,6 +53,8 @@ try {
     await b.eval('localStorage.clear()');
     await home();
     assert.equal(await b.eval('document.querySelectorAll(".mode-card").length'), 4);
+    assert.doesNotMatch(await b.eval('document.querySelector(".hero").innerText'), /세션|연속/, '오늘 세션·연속 출석 숨김');
+    assert.equal(await emoji(), '', '홈에 이모지 없음');
     await shot('01-home-light');
   });
 
@@ -179,6 +183,7 @@ try {
     await b.press(null, { code: 'Digit4', key: '4', vk: 52 });
     assert.match(await b.eval('document.querySelector(".play__banner").textContent'), /넘패드/);
     await shot('05-play-warning');
+    assert.equal(await emoji(), '', '연습 화면(HUD·경고)에 이모지 없음');
     assert.equal(await b.eval('document.querySelector(".hud__stat:nth-child(4) strong").textContent'), '—', '판정 없음');
     assert.equal(await b.eval('document.querySelector(".hud__score strong").textContent'), '0', '경고 입력은 점수 없음');
   });
@@ -251,7 +256,7 @@ try {
   });
 
   await step('기록 도전: 버튼 하나로 공식 조건 시작, 결과에 개인 최고 표시, 연습 설정은 그대로', async () => {
-    assert.match(await b.eval('document.querySelector(".chip--official").textContent'), /—/, '기록 전엔 기준만');
+    assert.ok(await b.eval('!!document.querySelector(".pb-card.is-empty")'), '기록 전엔 빈 개인 최고 카드');
     const settings = () => b.eval('JSON.stringify(JSON.parse(localStorage.getItem("numpad.v1")).settings)');
     const before = await settings();
     await b.eval('document.querySelector(".home__challenge").click()');
@@ -265,7 +270,9 @@ try {
     await b.eval('window.__skew = 61000');
     await b.waitFor('document.body.dataset.screen === "result"', 3000);
     const chips = await b.eval('[...document.querySelectorAll(".result__settings .chip")].map(c => c.textContent).join("|")');
-    assert.equal(chips, '수식 입력|어려움|60초 타임어택|넘패드 숨김|🏅 개인 최고 갱신');
+    assert.equal(chips, '수식 입력|어려움|60초 타임어택|넘패드 숨김|개인 최고 갱신');
+    assert.ok(await b.eval('!!document.querySelector(".result__emoji svg.icon")'), '결과 제목 아이콘');
+    assert.equal(await emoji(), '', '결과 화면에 이모지 없음');
     assert.match(await b.eval('document.querySelector(".result__title").textContent'), /첫 공식 기록/);
     await b.waitFor('document.querySelector(".confetti")', 2000);
     const score = await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).sessions.at(-1).score');
@@ -274,7 +281,7 @@ try {
     await b.sleep(800);
     await b.press('0');
     await b.waitFor('document.body.dataset.screen === "home"');
-    assert.equal(await b.eval('document.querySelector(".chip--official strong").textContent'), score.toLocaleString('ko-KR'));
+    assert.equal(await b.eval('document.querySelector(".pb-card strong").textContent'), score.toLocaleString('ko-KR'));
     assert.match(await b.eval('document.querySelector(".mode-card__best").textContent'), /^연습 최고/);
     assert.equal(await settings(), before, '기록 도전은 연습 설정을 바꾸지 않음');
   });
@@ -296,6 +303,8 @@ try {
     await b.waitFor('document.body.dataset.screen === "history"');
     assert.ok(await b.eval('document.querySelectorAll(".chart .chart__dot").length >= 6'));
     assert.equal(await b.eval('document.querySelectorAll(".sessions tbody tr").length'), await sessions());
+    assert.doesNotMatch(await b.eval('document.querySelector(".page-sub").textContent'), /연속/);
+    assert.equal(await emoji(), '', '기록 화면에 이모지 없음');
     assert.ok(await b.eval('!!document.querySelector(".history__heat .keypad")'));
     await shot('08-history');
     await b.press('4');
