@@ -71,7 +71,8 @@ export function homeScreen(ctx) {
   const optionRow = h('div.options__row');
   const lengthRow = h('div.options__row');
   const keypadRow = h('div.options__row');
-  const options = h('section.options.card', optionRow, lengthRow, keypadRow);
+  const topRowRow = h('div.options__row');
+  const options = h('section.options.card', optionRow, lengthRow, keypadRow, topRowRow);
 
   function segment(label, hint, items, current, onPick) {
     return [
@@ -107,6 +108,12 @@ export function homeScreen(ctx) {
         { id: true, name: '보기' },
         { id: false, name: '숨기기 (도전)' },
       ], st.showKeypad, (id) => update({ showKeypad: id })),
+    );
+    topRowRow.replaceChildren(
+      ...segment('상단 숫자키', '.', [
+        { id: false, name: '끄기' },
+        { id: true, name: '켜기 (넘패드 없는 키보드)' },
+      ], st.topRow, (id) => update({ topRow: id })),
     );
     for (const c of cards) c.classList.toggle('is-selected', c.dataset.mode === selected);
   }
@@ -144,6 +151,7 @@ export function homeScreen(ctx) {
     h('span.kbd', '+'), h('span.kbd', '−'), ' 레벨·난이도 ',
     h('span.kbd', '*'), ' 길이 ',
     h('span.kbd', '/'), ' 넘패드 표시 ',
+    h('span.kbd', '.'), ' 상단 숫자키 ',
     h('span.kbd', '0'), ' 기록',
   );
 
@@ -186,6 +194,7 @@ export function homeScreen(ctx) {
       else if (t === '-') step(-1);
       else if (t === '*') update({ lengthType: storage.settings.lengthType === 'time' ? 'count' : 'time' });
       else if (t === '/') update({ showKeypad: !storage.settings.showKeypad });
+      else if (t === '.') update({ topRow: !storage.settings.topRow });
       else if (t === '0') ctx.navigate('/history');
       else if (t === 'Enter') start();
     },

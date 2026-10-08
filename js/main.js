@@ -81,7 +81,7 @@ function render() {
 
 // ── 키 입력 ────────────────────────────
 window.addEventListener('keydown', (e) => {
-  const input = e.code === 'Escape' ? { kind: 'escape' } : normalizeKey(e);
+  const input = e.code === 'Escape' ? { kind: 'escape' } : normalizeKey(e, { topRow: storage.settings.topRow });
   if (input.kind === 'ignore') return;
   // 넘패드 키가 포커스된 버튼을 누르거나 브라우저 단축키(/ 빠른 찾기 등)를 실행하지 않도록 막는다
   if (input.kind !== 'escape') e.preventDefault();

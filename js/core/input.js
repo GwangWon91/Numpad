@@ -24,11 +24,16 @@ const MAIN_CODES = {
 const NUMLOCK_SENSITIVE = /^Numpad[0-9]$|^NumpadDecimal$/;
 const NUMLOCK_ON_KEYS = /^[0-9.,]$/;
 
+// 상단 숫자키 켜짐: 메인 키보드 키를 key 값으로 받는다 (Shift+8 → *, Shift+= → +)
+const TOP_ROW_CODES = /^Digit[0-9]$|^(Period|Minus|Slash|Equal|Enter)$/;
+const TOP_ROW_KEYS = /^[0-9.\-/*+]$|^Enter$/;
+
 /**
  * @param {{code: string, key: string, repeat?: boolean, ctrlKey?: boolean, altKey?: boolean, metaKey?: boolean}} e
+ * @param {{topRow?: boolean}} [opts] topRow: 상단 숫자키도 입력으로 받기
  * @returns {{kind: 'key'|'notNumpad'|'numLockOff'|'numLockToggle'|'ignore', token?: string}}
  */
-export function normalizeKey(e) {
+export function normalizeKey(e, { topRow = false } = {}) {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return { kind: 'ignore' };
   if (e.code === 'NumLock') return { kind: 'numLockToggle' };
 
@@ -38,6 +43,10 @@ export function normalizeKey(e) {
       return { kind: 'numLockOff', token };
     }
     return { kind: 'key', token };
+  }
+
+  if (topRow && TOP_ROW_CODES.test(e.code)) {
+    return TOP_ROW_KEYS.test(e.key) ? { kind: 'key', token: e.key } : { kind: 'ignore' };
   }
 
   const main = MAIN_CODES[e.code];

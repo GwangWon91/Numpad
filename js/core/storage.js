@@ -6,7 +6,7 @@ export const MAX_SESSIONS = 500;
 export function defaultState() {
   return {
     version: 1,
-    settings: { sound: true, theme: 'auto', showKeypad: true, lengthType: 'count', difficulty: 'normal', level: 1 },
+    settings: { sound: true, theme: 'auto', showKeypad: true, lengthType: 'count', difficulty: 'normal', level: 1, topRow: false },
     sessions: [],
   };
 }

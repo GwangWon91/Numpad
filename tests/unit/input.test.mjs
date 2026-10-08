@@ -32,3 +32,17 @@ test('길게 누름, 조합키, 기타 키는 무시한다', () => {
   assert.equal(normalizeKey({ code: 'KeyA', key: 'a' }).kind, 'ignore');
   assert.equal(normalizeKey({ code: 'NumLock', key: 'NumLock' }).kind, 'numLockToggle');
 });
+
+test('상단 숫자키를 켜면 메인 키보드 숫자·연산자·Enter도 토큰이 된다', () => {
+  const on = { topRow: true };
+  assert.deepEqual(normalizeKey({ code: 'Digit5', key: '5' }, on), { kind: 'key', token: '5' });
+  assert.deepEqual(normalizeKey({ code: 'Enter', key: 'Enter' }, on), { kind: 'key', token: 'Enter' });
+  assert.deepEqual(normalizeKey({ code: 'Period', key: '.' }, on), { kind: 'key', token: '.' });
+  assert.deepEqual(normalizeKey({ code: 'Digit8', key: '*' }, on), { kind: 'key', token: '*' }, 'Shift+8');
+  assert.deepEqual(normalizeKey({ code: 'Equal', key: '+' }, on), { kind: 'key', token: '+' }, 'Shift+=');
+  assert.equal(normalizeKey({ code: 'Equal', key: '=' }, on).kind, 'ignore');
+  assert.equal(normalizeKey({ code: 'Digit5', key: '%' }, on).kind, 'ignore');
+  // 넘패드와 NumLock 감지는 그대로
+  assert.deepEqual(normalizeKey({ code: 'Numpad7', key: '7' }, on), { kind: 'key', token: '7' });
+  assert.equal(normalizeKey({ code: 'Numpad8', key: 'ArrowUp' }, on).kind, 'numLockOff');
+});
