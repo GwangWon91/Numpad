@@ -250,15 +250,15 @@ try {
     await b.press('*');
   });
 
-  await step('공식 기록: 수식·어려움·60초·넘패드 숨김이면 결과에 표시되고 홈에 개인 최고가 뜬다', async () => {
+  await step('기록 도전: 버튼 하나로 공식 조건 시작, 결과에 개인 최고 표시, 연습 설정은 그대로', async () => {
     assert.match(await b.eval('document.querySelector(".chip--official").textContent'), /—/, '기록 전엔 기준만');
-    await b.press('3');
-    await b.press('+');
-    await b.press('*');
-    await b.press('/');
-    await b.press('Enter');
+    const settings = () => b.eval('JSON.stringify(JSON.parse(localStorage.getItem("numpad.v1")).settings)');
+    const before = await settings();
+    await b.eval('document.querySelector(".home__challenge").click()');
     await b.waitFor('document.body.dataset.screen === "play"');
     await b.eval('window.__skew = 0');
+    assert.equal(await b.eval('location.hash'), '#/challenge');
+    assert.match(await b.eval('document.querySelector(".hud__title").textContent'), /기록 도전/);
     assert.equal(await b.eval('document.querySelectorAll(".keycap").length'), 0, '넘패드 숨김');
     const current = () => b.eval('({ "⏎": "Enter", "−": "-" })[document.querySelector(".char.is-current").textContent] ?? document.querySelector(".char.is-current").textContent');
     for (let k = 0; k < 6; k++) await b.press(await current());
@@ -276,9 +276,7 @@ try {
     await b.waitFor('document.body.dataset.screen === "home"');
     assert.equal(await b.eval('document.querySelector(".chip--official strong").textContent'), score.toLocaleString('ko-KR'));
     assert.match(await b.eval('document.querySelector(".mode-card__best").textContent'), /^연습 최고/);
-    await b.press('*');
-    await b.press('/');
-    await b.press('-');
+    assert.equal(await settings(), before, '기록 도전은 연습 설정을 바꾸지 않음');
   });
 
   await step('연습 최고 갱신은 제목만 바뀌고 색종이는 없다', async () => {
