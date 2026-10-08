@@ -24,9 +24,12 @@ function demoSessions() {
       date.setHours(20, k * 15);
       const kpm = Math.round(base[mode] * (1 + d * 0.035) + Math.sin(d * 1.7 + k) * 12);
       const accuracy = Math.min(0.995, 0.88 + d * 0.007 + Math.cos(d + k) * 0.01);
+      // 수식 모드는 공식 조건(어려움 · 60초 · 넘패드 숨김)으로 해서 홈 개인 최고 카드가 채워지게
+      const official = mode === 'expr';
       out.push({
-        id: `demo${d}${k}`, mode, level: mode === 'keys' ? 4 : null, difficulty: mode === 'keys' ? null : 'normal',
-        lengthType: 'count', date: date.toISOString(), durationMs: 60_000 + d * 1000, kpm, accuracy,
+        id: `demo${d}${k}`, mode, level: mode === 'keys' ? 4 : null, difficulty: mode === 'keys' ? null : official ? 'hard' : 'normal',
+        lengthType: official ? 'time' : 'count', showKeypad: !official, topRow: false,
+        date: date.toISOString(), durationMs: official ? 60_000 : 60_000 + d * 1000, kpm, accuracy,
         items: 10, solved: mode === 'calc' ? 9 : null, maxCombo: 12 + d * 3 + k * 5,
         score: Math.round(kpm * 6 * accuracy ** 2), avgMs: Math.round(60_000 / kpm),
         attempts: { 7: 20, 8: 18, 9: 16, 4: 22, 5: 25, 6: 20, 1: 15, 2: 17, 3: 14, 0: 12, '.': 10, '+': 6, '-': 6, '*': 5, '/': 5 },
@@ -53,7 +56,8 @@ try {
       sessions: demoSessions(),
     };
     await b.eval(`localStorage.setItem("numpad.v1", ${JSON.stringify(JSON.stringify(state))})`);
-    await b.goto(base + '#/');
+    // 해시만 바꾸면 앱이 이미 읽은 저장소를 쓰므로, 쿼리를 붙여 새로 불러온다
+    await b.goto(`${base}?${scheme}#/`);
     await b.sleep(600);
     await b.press('5');
     await b.sleep(700);
