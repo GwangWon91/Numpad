@@ -34,7 +34,7 @@ export function homeScreen(ctx) {
     h(
       'div.hero__text',
       h('h1.hero__title', '넘패드,', h('br'), h('span.hero__accent', '보지 않고 빠르게.')),
-      h('p.hero__sub', '키 위치부터 빠른 계산까지. 매일 몇 분씩 손에 익혀요.'),
+      h('p.hero__sub', '키 위치부터 빠른 계산까지.'),
       // 오늘 세션 수·연속 출석은 사용자 요청으로 숨김 (todaySummary·streakDays는 stats.js에 남아 있음)
       h(
         'div.hero__chips',
