@@ -1,8 +1,9 @@
-// 홈: 모드 선택, 옵션, 오늘의 기록, 워밍업 넘패드
+// 홈: 개인 최고, 모드 선택, 옵션, 워밍업 넘패드
 import { MODES } from '../core/session.js';
 import { LEVELS } from '../core/keys.js';
-import { bestByMode, todaySummary, streakDays, officialBest } from '../core/stats.js';
+import { bestByMode, todaySummary, officialBest } from '../core/stats.js';
 import { h } from '../ui/dom.js';
+import { icon, badge } from '../ui/icons.js';
 import { createKeypad } from '../ui/keypad.js';
 
 const MODE_ORDER = ['keys', 'number', 'expr', 'calc'];
@@ -23,7 +24,6 @@ export function homeScreen(ctx) {
   let selected = MODE_ORDER.includes(storage.settings.lastMode) ? storage.settings.lastMode : 'keys';
   const bests = bestByMode(storage.sessions);
   const today = todaySummary(storage.sessions);
-  const streak = streakDays(storage.sessions);
   const official = officialBest(storage.sessions);
 
   // ── 히어로 ──
@@ -35,18 +35,19 @@ export function homeScreen(ctx) {
       'div.hero__text',
       h('h1.hero__title', '넘패드,', h('br'), h('span.hero__accent', '보지 않고 빠르게.')),
       h('p.hero__sub', '키 위치부터 빠른 계산까지. 매일 몇 분씩 손에 익혀요.'),
+      // 오늘 세션 수·연속 출석은 사용자 요청으로 숨김 (todaySummary·streakDays는 stats.js에 남아 있음)
       h(
         'div.hero__chips',
-        h('span.chip', '오늘 ', h('strong', `${today.count}`), '세션'),
-        h('span.chip', '🔥 연속 ', h('strong', `${streak}`), '일'),
-        today.maxCombo ? h('span.chip', '오늘 최고 콤보 ', h('strong', `${today.maxCombo}`)) : null,
         h(
-          'span.chip.chip--official',
+          `div.pb-card${official ? '' : '.is-empty'}`,
           { title: '개인 기록 기준: 수식 · 어려움 · 60초 타임어택 · 넘패드 숨김' },
+          badge('medal', 'accent', 'pb-card__badge'),
+          h('span.pb-card__text', h('span.pb-card__label', '개인 최고'), h('span.pb-card__rule', '수식 · 어려움 · 60초 · 넘패드 숨김')),
           official
-            ? ['🏅 개인 최고 ', h('strong', (official.score ?? 0).toLocaleString('ko-KR')), '점']
-            : '🏅 개인 최고 — 수식·어려움·60초·넘패드 숨김',
+            ? h('span.pb-card__score', h('strong.mono', (official.score ?? 0).toLocaleString('ko-KR')), '점')
+            : h('span.pb-card__empty', '기록 도전으로 첫 기록을 남겨 보세요'),
         ),
+        today.maxCombo ? h('span.chip', '오늘 최고 콤보 ', h('strong', `${today.maxCombo}`)) : null,
       ),
     ),
     h('div.warmup', warmup.el, warmupHint),
@@ -158,7 +159,7 @@ export function homeScreen(ctx) {
 
   const el = h(
     'div.screen.home',
-    h('div.banner.touch-note', '⌨ 넘패드가 있는 키보드에서 연습하도록 만들어졌어요'),
+    h('div.banner.touch-note', icon('keyboard'), '넘패드가 있는 키보드에서 연습하도록 만들어졌어요'),
     hero,
     h('section.modes', cards),
     options,

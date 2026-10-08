@@ -1,7 +1,8 @@
 // 기록 화면: 추이 그래프, 모드별 최고 기록, 누적 약한 키, 최근 세션, 내보내기
 import { MODES } from '../core/session.js';
-import { bestByMode, weakKeys, series, streakDays, formatDuration, formatPercent } from '../core/stats.js';
+import { bestByMode, weakKeys, series, formatDuration, formatPercent } from '../core/stats.js';
 import { h } from '../ui/dom.js';
+import { badge } from '../ui/icons.js';
 import { lineChart } from '../ui/chart.js';
 import { createKeypad } from '../ui/keypad.js';
 
@@ -31,7 +32,7 @@ export function historyScreen(ctx) {
 
     if (all.length === 0) {
       body.replaceChildren(
-        h('div.empty.card', h('div.empty__emoji', '🗒️'), h('p', '아직 기록이 없어요.'), h('p.empty__sub', '홈에서 연습을 시작하면 여기에 쌓입니다.'),
+        h('div.empty.card', h('div.empty__emoji', badge('notebook-pen', 'accent')), h('p', '아직 기록이 없어요.'), h('p.empty__sub', '홈에서 연습을 시작하면 여기에 쌓입니다.'),
           h('button.btn.btn--primary', { type: 'button', onclick: () => ctx.navigate('/') }, '연습하러 가기')),
       );
       return;
@@ -124,12 +125,11 @@ export function historyScreen(ctx) {
     }
   }
 
-  const streak = streakDays(storage.sessions);
   const el = h(
     'div.screen.history',
     h(
       'div.history__head',
-      h('div', h('h1.page-title', '기록'), h('p.page-sub', `총 ${storage.sessions.length}세션 · 🔥 연속 ${streak}일`)),
+      h('div', h('h1.page-title', '기록'), h('p.page-sub', `총 ${storage.sessions.length}세션`)),
       tabs,
     ),
     body,
