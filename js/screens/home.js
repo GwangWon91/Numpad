@@ -1,7 +1,7 @@
 // 홈: 모드 선택, 옵션, 오늘의 기록, 워밍업 넘패드
 import { MODES } from '../core/session.js';
 import { LEVELS } from '../core/keys.js';
-import { bestByMode, todaySummary, streakDays } from '../core/stats.js';
+import { bestByMode, todaySummary, streakDays, officialBest } from '../core/stats.js';
 import { h } from '../ui/dom.js';
 import { createKeypad } from '../ui/keypad.js';
 
@@ -24,6 +24,7 @@ export function homeScreen(ctx) {
   const bests = bestByMode(storage.sessions);
   const today = todaySummary(storage.sessions);
   const streak = streakDays(storage.sessions);
+  const official = officialBest(storage.sessions);
 
   // ── 히어로 ──
   const warmup = createKeypad({ size: 'sm' });
@@ -39,6 +40,13 @@ export function homeScreen(ctx) {
         h('span.chip', '오늘 ', h('strong', `${today.count}`), '세션'),
         h('span.chip', '🔥 연속 ', h('strong', `${streak}`), '일'),
         today.maxCombo ? h('span.chip', '오늘 최고 콤보 ', h('strong', `${today.maxCombo}`)) : null,
+        h(
+          'span.chip.chip--official',
+          { title: '개인 기록 기준: 수식 · 어려움 · 60초 타임어택 · 넘패드 숨김' },
+          official
+            ? ['🏅 개인 최고 ', h('strong', (official.score ?? 0).toLocaleString('ko-KR')), '점']
+            : '🏅 개인 최고 — 수식·어려움·60초·넘패드 숨김',
+        ),
       ),
     ),
     h('div.warmup', warmup.el, warmupHint),
@@ -55,7 +63,7 @@ export function homeScreen(ctx) {
       h('span.mode-card__glyph.mono', MODE_CARD[id].glyph),
       h('span.mode-card__name', m.name),
       h('span.mode-card__desc', MODE_CARD[id].desc),
-      h('span.mode-card__best', best ? `최고 ${best.kpm}타/분 · 콤보 ${best.maxCombo}` : '아직 기록 없음'),
+      h('span.mode-card__best', best ? `연습 최고 ${best.kpm}타/분 · 콤보 ${best.maxCombo}` : '아직 기록 없음'),
     );
   });
 

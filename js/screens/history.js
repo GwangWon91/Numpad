@@ -56,7 +56,7 @@ export function historyScreen(ctx) {
         const b = bests[m.id];
         return h(
           `div.best-card${filter === m.id ? '.is-active' : ''}`,
-          h('span.best-card__name', m.name),
+          h('span.best-card__name', `${m.short} 연습 최고`),
           b
             ? [
                 h('span.best-card__kpm.mono', b.score.toLocaleString('ko-KR'), h('small', ' 점')),
