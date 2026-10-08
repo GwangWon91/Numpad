@@ -95,6 +95,8 @@ try {
     const acc = await b.eval('document.querySelectorAll(".stat__value")[1].textContent');
     assert.equal(acc, '96.8%', '30타 중 오타 1 → 30/31');
     assert.equal(await b.eval('document.querySelectorAll(".weak-list li").length'), 1);
+    const chips = await b.eval('[...document.querySelectorAll(".result__settings .chip")].map(c => c.textContent).join("|")');
+    assert.equal(chips, '키 위치 익히기|L1 홈 행|30타|넘패드 보기', '설정 표시, 공식 기록 아님');
     const saved = await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).sessions[0]');
     assert.ok(saved.score > 0 && saved.avgMs > 0, '기록에 점수·평균 시간 저장');
     assert.equal(await b.eval('document.querySelector(".result__score-n").textContent.replace(/,/g, "")'), String(saved.score));
@@ -229,14 +231,46 @@ try {
     await b.press('*');
   });
 
-  await step('최고 기록 갱신 시 축하 연출', async () => {
+  await step('공식 기록: 수식·어려움·60초·넘패드 숨김이면 결과에 표시되고 홈에 개인 최고가 뜬다', async () => {
+    assert.match(await b.eval('document.querySelector(".chip--official").textContent'), /—/, '기록 전엔 기준만');
+    await b.press('3');
+    await b.press('+');
+    await b.press('*');
+    await b.press('/');
+    await b.press('Enter');
+    await b.waitFor('document.body.dataset.screen === "play"');
+    await b.eval('window.__skew = 0');
+    assert.equal(await b.eval('document.querySelectorAll(".keycap").length'), 0, '넘패드 숨김');
+    const current = () => b.eval('({ "⏎": "Enter", "−": "-" })[document.querySelector(".char.is-current").textContent] ?? document.querySelector(".char.is-current").textContent');
+    for (let k = 0; k < 6; k++) await b.press(await current());
+    await b.eval('window.__skew = 61000');
+    await b.waitFor('document.body.dataset.screen === "result"', 3000);
+    const chips = await b.eval('[...document.querySelectorAll(".result__settings .chip")].map(c => c.textContent).join("|")');
+    assert.equal(chips, '수식 입력|어려움|60초 타임어택|넘패드 숨김|🏅 개인 최고 갱신');
+    assert.match(await b.eval('document.querySelector(".result__title").textContent'), /첫 공식 기록/);
+    await b.waitFor('document.querySelector(".confetti")', 2000);
+    const score = await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).sessions.at(-1).score');
+    assert.ok(score > 0);
+    await shot('07a-result-official');
+    await b.sleep(800);
+    await b.press('0');
+    await b.waitFor('document.body.dataset.screen === "home"');
+    assert.equal(await b.eval('document.querySelector(".chip--official strong").textContent'), score.toLocaleString('ko-KR'));
+    assert.match(await b.eval('document.querySelector(".mode-card__best").textContent'), /^연습 최고/);
+    await b.press('*');
+    await b.press('/');
+    await b.press('-');
+  });
+
+  await step('연습 최고 갱신은 제목만 바뀌고 색종이는 없다', async () => {
     await b.press('1');
     await b.press('Enter');
     await b.waitFor('document.body.dataset.screen === "play"');
     await playStrict();
     const title = await b.eval('document.querySelector(".result__title").textContent');
-    assert.match(title, /갱신|완벽|정확/);
-    if (/갱신/.test(title)) await b.waitFor('document.querySelector(".confetti")', 2000);
+    assert.match(title, /연습 최고|완벽|정확/);
+    await b.sleep(400);
+    assert.equal(await b.eval('document.querySelector(".confetti")'), null, '연습 기록은 색종이 없음');
     await shot('07-result-best');
   });
 
