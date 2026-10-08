@@ -183,6 +183,25 @@ try {
     assert.equal(await b.eval('document.querySelector(".hud__score strong").textContent'), '0', '경고 입력은 점수 없음');
   });
 
+  await step('상단 숫자키: 홈에서 . 로 켜면 상단 숫자키로도 연습할 수 있다', async () => {
+    await home();
+    await b.press('.');
+    assert.equal(await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).settings.topRow'), true);
+    await b.press('1');
+    await b.press('Enter');
+    await b.waitFor('document.body.dataset.screen === "play"');
+    for (let k = 0; k < 4; k++) {
+      const t = await target();
+      await b.press(null, { code: `Digit${t}`, key: t, vk: 48 + Number(t) });
+    }
+    assert.equal(await b.eval('document.querySelector(".play__banner").textContent'), '', '경고 없음');
+    assert.equal(await b.eval('document.querySelector(".hud__stat:nth-child(4) strong").textContent'), '100%');
+    await b.press(null, { code: 'Escape', key: 'Escape', vk: 27 });
+    await b.waitFor('document.body.dataset.screen === "home"');
+    await b.press('.');
+    assert.equal(await b.eval('JSON.parse(localStorage.getItem("numpad.v1")).settings.topRow'), false);
+  });
+
   await step('빠른 계산: 정답·오답 판정, Backspace, 정답률 기록', async () => {
     await home();
     await b.press('4');
