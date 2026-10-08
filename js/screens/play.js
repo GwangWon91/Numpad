@@ -1,13 +1,12 @@
 // 연습 화면: 문제 표시, 판정 피드백, 콤보, HUD, 경고
-import { createSession, MODES, TIME_ATTACK_MS } from '../core/session.js';
+import { createSession, MODES, TIME_ATTACK_MS, DIFF_NAME } from '../core/session.js';
 import { FINGERS, LEVELS, labelOf } from '../core/keys.js';
-import { personalBests, formatDuration, formatPercent } from '../core/stats.js';
+import { personalBests, officialBest, formatDuration, formatPercent } from '../core/stats.js';
 import { sfx } from '../core/sound.js';
 import { h, replay } from '../ui/dom.js';
 import { createKeypad } from '../ui/keypad.js';
 
 const MILESTONES = new Set([10, 25, 50, 75, 100, 150, 200, 300, 500]);
-const DIFF_NAME = { easy: '쉬움', normal: '보통', hard: '어려움' };
 
 export function playScreen(ctx, modeId) {
   const { storage } = ctx;
@@ -167,10 +166,11 @@ export function playScreen(ctx, modeId) {
       ctx.navigate('/');
       return;
     }
-    const record = session.summary();
+    const record = { ...session.summary(), showKeypad: st.showKeypad };
     const pbs = personalBests(storage.sessions, record);
+    const officialPrev = officialBest(storage.sessions);
     const saved = storage.addSession(record);
-    ctx.lastResult = { record: saved, pbs };
+    ctx.lastResult = { record: saved, pbs, officialPrev };
     sfx.finish();
     el.classList.add('is-finished');
     setTimeout(() => ctx.navigate('/result'), 350);

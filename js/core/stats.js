@@ -24,6 +24,19 @@ export function personalBests(previous, record) {
   return METRICS.filter((m) => (record[m] ?? 0) > best[m]);
 }
 
+/** 공정한 비교를 위한 개인 기록 기준: 수식 · 어려움 · 60초 · 넘패드 숨김 */
+export const OFFICIAL = { mode: 'expr', difficulty: 'hard', lengthType: 'time', showKeypad: false };
+
+/** 넘패드 표시 여부가 없는 이전 기록은 확인할 수 없어 제외 */
+export const isOfficial = (r) => Object.entries(OFFICIAL).every(([k, v]) => r[k] === v);
+
+/** 공식 기준 기록 중 점수 최고 기록. 없으면 null */
+export function officialBest(sessions) {
+  let best = null;
+  for (const s of sessions) if (isOfficial(s) && (best === null || (s.score ?? 0) > (best.score ?? 0))) best = s;
+  return best;
+}
+
 /** 기대 키별 오타율. attempts가 minAttempts 이상인 키만, 오타율 높은 순 */
 export function weakKeys(records, minAttempts = 3) {
   const list = Array.isArray(records) ? records : [records];

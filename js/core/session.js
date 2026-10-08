@@ -10,6 +10,20 @@ export const MODES = {
   calc: { id: 'calc', name: '빠른 계산', short: '계산', strict: false, defaultCount: 15, unit: '문항' },
 };
 
+export const DIFF_NAME = { easy: '쉬움', normal: '보통', hard: '어려움' };
+
+/** 기록의 설정을 읽기 쉬운 조각으로: ['수식 입력', '어려움', '60초 타임어택', '넘패드 숨김'] */
+export function settingsLabels(r) {
+  const mode = MODES[r.mode];
+  const level = LEVELS.find((l) => l.id === r.level);
+  return [
+    mode?.name ?? r.mode,
+    r.mode === 'keys' ? (level ? `L${level.id} ${level.name}` : null) : DIFF_NAME[r.difficulty],
+    r.lengthType === 'time' ? '60초 타임어택' : mode ? `${mode.defaultCount}${mode.unit}` : null,
+    r.showKeypad === false ? '넘패드 숨김' : r.showKeypad === true ? '넘패드 보기' : null,
+  ].filter(Boolean);
+}
+
 export const TIME_ATTACK_MS = 60_000;
 const CALC_MAX_LEN = 10;
 

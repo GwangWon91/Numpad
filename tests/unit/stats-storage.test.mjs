@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { bestByMode, personalBests, weakKeys, todaySummary, streakDays, formatDuration, formatPercent } from '../../js/core/stats.js';
+import { bestByMode, personalBests, weakKeys, todaySummary, streakDays, isOfficial, officialBest, formatDuration, formatPercent } from '../../js/core/stats.js';
+import { settingsLabels } from '../../js/core/session.js';
 import { createStorage, STORAGE_KEY, MAX_SESSIONS } from '../../js/core/storage.js';
 
 const rec = (mode, kpm, accuracy, maxCombo, date = '2026-10-01T03:00:00') => ({ mode, kpm, accuracy, maxCombo, date: new Date(date).toISOString(), durationMs: 60_000 });
@@ -36,6 +37,22 @@ test('todaySummary와 streakDays', () => {
   assert.equal(streakDays(s, now), 3);
   assert.equal(streakDays(s.slice(0, 2), now), 2, '오늘 안 했어도 어제까지 이어지면 유지');
   assert.equal(streakDays(s.slice(0, 1), now), 0);
+});
+
+test('공식 기록: 4가지 조건이 모두 맞아야 하고 점수 최고 기록을 고른다', () => {
+  const off = (score, patch = {}) => ({ mode: 'expr', difficulty: 'hard', lengthType: 'time', showKeypad: false, score, ...patch });
+  assert.ok(isOfficial(off(1)));
+  for (const patch of [{ mode: 'number' }, { difficulty: 'normal' }, { lengthType: 'count' }, { showKeypad: true }, { showKeypad: undefined }]) {
+    assert.ok(!isOfficial(off(1, patch)), JSON.stringify(patch));
+  }
+  assert.equal(officialBest([off(100), off(9999, { showKeypad: true }), off(300), off(200)]).score, 300);
+  assert.equal(officialBest([rec('expr', 1, 1, 1)]), null);
+});
+
+test('settingsLabels', () => {
+  assert.deepEqual(settingsLabels({ mode: 'expr', difficulty: 'hard', lengthType: 'time', showKeypad: false }), ['수식 입력', '어려움', '60초 타임어택', '넘패드 숨김']);
+  assert.deepEqual(settingsLabels({ mode: 'keys', level: 1, lengthType: 'count', showKeypad: true }), ['키 위치 익히기', 'L1 홈 행', '30타', '넘패드 보기']);
+  assert.deepEqual(settingsLabels({ mode: 'calc', difficulty: 'easy', lengthType: 'count' }), ['빠른 계산', '쉬움', '15문항'], '이전 기록은 넘패드 생략');
 });
 
 test('형식 함수', () => {
