@@ -1,7 +1,7 @@
 // 결과 화면: 지표, 최고 기록 연출, 약한 키 히트맵, 다음 행동
-import { MODES } from '../core/session.js';
+import { MODES, settingsLabels } from '../core/session.js';
 import { FINGERS, labelOf } from '../core/keys.js';
-import { weakKeys, formatDuration, formatPercent } from '../core/stats.js';
+import { weakKeys, isOfficial, formatDuration, formatPercent } from '../core/stats.js';
 import { sfx } from '../core/sound.js';
 import { h } from '../ui/dom.js';
 import { createKeypad } from '../ui/keypad.js';
@@ -9,12 +9,15 @@ import { confetti } from '../ui/confetti.js';
 
 const INPUT_GUARD_MS = 700; // 마지막 Enter 연타로 바로 재시작되지 않게
 
-function headline(record, pbs) {
+// 개인 최고 = 공식 기준 기록, 연습 최고 = 설정 상관없는 모드별 기록
+function headline(record, pbs, officialNew, officialPrev) {
+  if (officialNew && !officialPrev) return { emoji: '🏅', title: '첫 공식 기록!', sub: '이제 이 점수가 내 개인 최고예요.' };
+  if (officialNew) return { emoji: '🏅', title: '개인 최고 갱신!', sub: '공식 기준에서 내 최고 점수를 넘었어요.' };
   if (pbs.includes('first')) return { emoji: '🌱', title: '첫 기록 완료!', sub: '이제부터 이 기록을 넘어서 봐요.' };
-  if (pbs.includes('score')) return { emoji: '🏆', title: '최고 점수 갱신!', sub: '빠르고 정확하게, 끊지 않고. 딱 그거예요.' };
-  if (pbs.includes('kpm')) return { emoji: '🎉', title: '최고 속도 갱신!', sub: '손이 넘패드를 기억하기 시작했어요.' };
-  if (pbs.includes('maxCombo')) return { emoji: '🔥', title: '최고 콤보 갱신!', sub: '흐름을 끊지 않는 힘이 붙고 있어요.' };
-  if (pbs.includes('accuracy')) return { emoji: '🎯', title: '최고 정확도 갱신!', sub: '정확함이 곧 속도가 됩니다.' };
+  if (pbs.includes('score')) return { emoji: '🏆', title: '연습 최고 점수 갱신!', sub: '빠르고 정확하게, 끊지 않고. 딱 그거예요.' };
+  if (pbs.includes('kpm')) return { emoji: '🎉', title: '연습 최고 속도 갱신!', sub: '손이 넘패드를 기억하기 시작했어요.' };
+  if (pbs.includes('maxCombo')) return { emoji: '🔥', title: '연습 최고 콤보 갱신!', sub: '흐름을 끊지 않는 힘이 붙고 있어요.' };
+  if (pbs.includes('accuracy')) return { emoji: '🎯', title: '연습 최고 정확도 갱신!', sub: '정확함이 곧 속도가 됩니다.' };
   const a = record.accuracy;
   if (a >= 0.98) return { emoji: '✨', title: '거의 완벽해요', sub: '이제 속도를 조금 더 올려 봐요.' };
   if (a >= 0.93) return { emoji: '👍', title: '좋아요, 정확합니다', sub: '같은 리듬으로 한 번 더!' };
@@ -31,17 +34,19 @@ export function gradeOf(accuracy) {
 }
 
 export function resultScreen(ctx) {
-  const { record, pbs } = ctx.lastResult;
+  const { record, pbs, officialPrev } = ctx.lastResult;
   const mode = MODES[record.mode];
-  const head = headline(record, pbs);
-  const celebrate = pbs.length > 0 && !pbs.includes('first');
+  const official = isOfficial(record);
+  const officialNew = official && (record.score ?? 0) > (officialPrev?.score ?? 0);
+  const head = headline(record, pbs, officialNew, officialPrev);
+  const celebrate = officialNew;
 
   const tile = (value, label, key) => h(`div.stat${pbs.includes(key) ? '.is-best' : ''}`, h('span.stat__value', value), h('span.stat__label', label));
   const scoreBlock = h(
     `div.result__score${pbs.includes('score') ? '.is-best' : ''}`,
     { title: '정타마다 기본점 × 속도 × 콤보 배율' },
     h('span.result__score-n.mono', (record.score ?? 0).toLocaleString('ko-KR')),
-    h('span.result__score-label', pbs.includes('score') ? '점 · 최고!' : '점'),
+    h('span.result__score-label', pbs.includes('score') ? '점 · 연습 최고' : '점'),
   );
   const tiles = h(
     'div.result__tiles',
@@ -93,7 +98,12 @@ export function resultScreen(ctx) {
       h('div.result__emoji', head.emoji),
       h(`div.grade.grade--${gradeOf(record.accuracy)}`, { title: '정확도 등급 (S 99% · A 96% · B 90%)' }, gradeOf(record.accuracy)),
       h('h1.result__title', head.title),
-      h('p.result__sub', `${mode.name} · ${head.sub}`),
+      h('p.result__sub', head.sub),
+      h(
+        'div.result__settings',
+        settingsLabels(record).map((t) => h('span.chip', t)),
+        official ? h('span.chip.chip--official', { title: '개인 기록 기준: 수식 · 어려움 · 60초 · 넘패드 숨김' }, h('strong', officialNew ? '🏅 개인 최고 갱신' : '🏅 공식 기록')) : null,
+      ),
     ),
     scoreBlock,
     tiles,
