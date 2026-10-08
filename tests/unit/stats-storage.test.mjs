@@ -53,6 +53,7 @@ test('settingsLabels', () => {
   assert.deepEqual(settingsLabels({ mode: 'expr', difficulty: 'hard', lengthType: 'time', showKeypad: false }), ['수식 입력', '어려움', '60초 타임어택', '넘패드 숨김']);
   assert.deepEqual(settingsLabels({ mode: 'keys', level: 1, lengthType: 'count', showKeypad: true }), ['키 위치 익히기', 'L1 홈 행', '30타', '넘패드 보기']);
   assert.deepEqual(settingsLabels({ mode: 'calc', difficulty: 'easy', lengthType: 'count' }), ['빠른 계산', '쉬움', '15문항'], '이전 기록은 넘패드 생략');
+  assert.deepEqual(settingsLabels({ mode: 'number', difficulty: 'normal', lengthType: 'count', showKeypad: true, topRow: true }).at(-1), '상단 숫자키');
 });
 
 test('형식 함수', () => {

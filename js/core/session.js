@@ -21,6 +21,7 @@ export function settingsLabels(r) {
     r.mode === 'keys' ? (level ? `L${level.id} ${level.name}` : null) : DIFF_NAME[r.difficulty],
     r.lengthType === 'time' ? '60초 타임어택' : mode ? `${mode.defaultCount}${mode.unit}` : null,
     r.showKeypad === false ? '넘패드 숨김' : r.showKeypad === true ? '넘패드 보기' : null,
+    r.topRow === true ? '상단 숫자키' : null,
   ].filter(Boolean);
 }
 

@@ -166,7 +166,7 @@ export function playScreen(ctx, modeId) {
       ctx.navigate('/');
       return;
     }
-    const record = { ...session.summary(), showKeypad: st.showKeypad };
+    const record = { ...session.summary(), showKeypad: st.showKeypad, topRow: st.topRow };
     const pbs = personalBests(storage.sessions, record);
     const officialPrev = officialBest(storage.sessions);
     const saved = storage.addSession(record);
@@ -254,7 +254,7 @@ export function playScreen(ctx, modeId) {
       if (finished) return;
       if (input.kind === 'escape') return ctx.navigate('/');
       if (input.kind === 'numLockOff') return warn('NumLock이 꺼져 있어요. NumLock 키를 눌러 켜 주세요');
-      if (input.kind === 'notNumpad') return warn('상단 숫자키 대신 오른쪽 넘패드로 입력해 주세요');
+      if (input.kind === 'notNumpad') return warn('상단 숫자키는 꺼져 있어요. 넘패드로 입력하거나 홈에서 켤 수 있어요');
       if (input.kind === 'numLockToggle') return banner.replaceChildren();
       if (input.kind !== 'key' || lock) return;
       handle(session.press(input.token, now()), input.token);
