@@ -112,7 +112,7 @@ export function resultScreen(ctx) {
   );
 
   function retry() {
-    ctx.navigate(`/play/${record.mode}`);
+    ctx.navigate(official ? '/challenge' : `/play/${record.mode}`);
   }
 
   const openedAt = Date.now();

@@ -197,6 +197,13 @@
   margin-top: var(--space-6);
 }
 
+.home__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
 .home__legend {
   display: flex;
   flex-wrap: wrap;

@@ -8,9 +8,10 @@ import { createKeypad } from '../ui/keypad.js';
 
 const MILESTONES = new Set([10, 25, 50, 75, 100, 150, 200, 300, 500]);
 
-export function playScreen(ctx, modeId) {
+// overrides: 기록 도전처럼 이번 판에만 덮어쓸 설정 (저장된 연습 설정은 그대로)
+export function playScreen(ctx, modeId, overrides) {
   const { storage } = ctx;
-  const st = storage.settings;
+  const st = { ...storage.settings, ...overrides };
   const mode = MODES[modeId];
   const length = st.lengthType === 'time' ? { type: 'time', value: TIME_ATTACK_MS } : { type: 'count', value: mode.defaultCount };
   const session = createSession({ mode: modeId, level: st.level, difficulty: st.difficulty, length, seed: Date.now() });
@@ -29,7 +30,7 @@ export function playScreen(ctx, modeId) {
   const hud = h(
     'div.hud',
     h('button.btn.btn--ghost', { type: 'button', onclick: () => ctx.navigate('/') }, '← ', h('span.kbd', 'Esc')),
-    h('div.hud__title', h('strong', mode.name), h('span.chip', detail), length.type === 'time' ? h('span.chip', '⏱ 타임어택') : null),
+    h('div.hud__title', h('strong', mode.name), h('span.chip', detail), length.type === 'time' ? h('span.chip', '⏱ 타임어택') : null, overrides ? h('span.chip', '🏅 기록 도전') : null),
     h(
       'div.hud__stats',
       h('span.hud__score', { title: '점수 = 정타마다 기본점 × 속도 × 콤보 배율' }, scoreEl, h('small', '점')),

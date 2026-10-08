@@ -145,6 +145,7 @@ export function homeScreen(ctx) {
   }
 
   const startBtn = h('button.btn.btn--primary.btn--lg', { type: 'button', onclick: start }, '시작하기', h('span.kbd', 'Enter'));
+  const challengeBtn = h('button.btn.btn--lg.home__challenge', { type: 'button', title: '수식 · 어려움 · 60초 · 넘패드 숨김', onclick: () => ctx.navigate('/challenge') }, '기록 도전');
   const legend = h(
     'p.home__legend',
     h('span.kbd', '1'), '–', h('span.kbd', '4'), ' 모드 ',
@@ -161,7 +162,7 @@ export function homeScreen(ctx) {
     hero,
     h('section.modes', cards),
     options,
-    h('div.home__start', startBtn, legend),
+    h('div.home__start', h('div.home__buttons', startBtn, challengeBtn), legend),
   );
   renderOptions();
 

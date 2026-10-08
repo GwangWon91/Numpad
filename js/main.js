@@ -3,6 +3,7 @@ import { normalizeKey } from './core/input.js';
 import { createStorage } from './core/storage.js';
 import { setSoundEnabled } from './core/sound.js';
 import { MODES } from './core/session.js';
+import { OFFICIAL } from './core/stats.js';
 import { h } from './ui/dom.js';
 import { homeScreen } from './screens/home.js';
 import { playScreen } from './screens/play.js';
@@ -63,6 +64,7 @@ let current = null;
 function resolve(path) {
   const play = path.match(/^\/play\/(\w+)$/);
   if (play && MODES[play[1]]) return () => playScreen(ctx, play[1]);
+  if (path === '/challenge') return () => playScreen(ctx, OFFICIAL.mode, OFFICIAL);
   if (path === '/result' && ctx.lastResult) return () => resultScreen(ctx);
   if (path === '/history') return () => historyScreen(ctx);
   return () => homeScreen(ctx);
